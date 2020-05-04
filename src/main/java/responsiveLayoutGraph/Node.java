@@ -16,8 +16,8 @@ public class Node {
 
     public Node(String xPath) {
         this.xPath = xPath;
-        this.alignmentConstraints = new ArrayList<AlignmentConstraint>();
-        this.visibilityConstraints = new ArrayList<VisibilityConstraint>();
+        this.alignmentConstraints = new ArrayList<>();
+        this.visibilityConstraints = new ArrayList<>();
     }
 
     /**
@@ -36,6 +36,23 @@ public class Node {
      */
     public void addVisibilityConstraint(VisibilityConstraint vc) {
         visibilityConstraints.add(vc);
+    }
+
+    /**
+     * Returns the parent-child alignment constraints for which the node is the child currently linked to the node.
+     *
+     * @return An arrayList of AlignmentConstraint objects
+     */
+    public ArrayList<AlignmentConstraint> getParentConstraints() {
+        ArrayList<AlignmentConstraint> result = new ArrayList<AlignmentConstraint>();
+        TreeMap<Integer, AlignmentConstraint> ordered = new TreeMap<Integer, AlignmentConstraint>();
+        alignmentConstraints.forEach(alignmentConstraint -> {
+            ordered.put(alignmentConstraint.min, alignmentConstraint);
+        });
+        ordered.values().forEach(alignmentConstraint -> {
+            result.add(alignmentConstraint);
+        });
+        return result;
     }
 
     public String toString() {
