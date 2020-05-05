@@ -1,5 +1,13 @@
-responsiveLayoutGraph\ResponsiveLayoutGraph.class
+layout\Element.class
+layout\Relationship.class
 responsiveLayoutGraph\Node.class
-responsiveLayoutGraph\AlignmentConstraint.class
-responsiveLayoutGraph\Type.class
+AutomaticAnomaliesDetection.class
+layout\ParentChild.class
+layout\Sibling.class
 responsiveLayoutGraph\VisibilityConstraint.class
+layout\Layout.class
+responsiveLayoutGraph\Type.class
+responsiveLayoutGraph\ResponsiveLayoutGraph.class
+layout\LayoutFactory.class
+layout\Layout$1.class
+responsiveLayoutGraph\AlignmentConstraint.class
