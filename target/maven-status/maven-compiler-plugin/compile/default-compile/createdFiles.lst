@@ -29,6 +29,7 @@ xPert\layout\AlignmentGraph.class
 xPert\visitors\ExactMatchVisitor.class
 xPert\DomNodePair.class
 anomaliesDetection\layout\ParentChild.class
+anomaliesDetection\utils\StopwatchFactory.class
 anomaliesDetection\layout\LayoutFactory.class
 anomaliesDetection\responsiveLayoutGraph\Type.class
 anomaliesDetection\AutomaticAnomaliesDetection.class
