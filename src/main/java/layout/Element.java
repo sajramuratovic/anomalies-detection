@@ -11,12 +11,15 @@ public class Element {
     Element parent;
     ArrayList<Element> children;
     HashMap<String, String> styles;
+    int[] boundingCoordinates;
+    int[] contentCoordinates;
 
     /**
      * A Rectangle specifies an area in a coordinate space that is enclosed by the Rectangle object's upper-left point
      * (x,y) in the coordinate space, its width, and its height.
      */
-    Rectangle rectangle;
+    Rectangle boundingRectangle;
+    Rectangle contentRectangle;
 
     public Element(String x, int x1, int y1, int x2, int y2) {
         this.xpath = x;
@@ -24,7 +27,8 @@ public class Element {
         this.x2 = x2;
         this.y1 = y1;
         this.y2 = y2;
-        this.rectangle = new Rectangle(x1, y1, x2-x1, y2 - y1);
+        boundingCoordinates = new int[] {x1,y1,x2,y2};
+        this.boundingRectangle = new Rectangle(x1, y1, x2-x1, y2 - y1);
     }
 
     public String getXpath() {
@@ -92,10 +96,26 @@ public class Element {
     }
 
     public Rectangle getRectangle() {
-        return rectangle;
+        return boundingRectangle;
     }
 
     public void setRectangle(Rectangle rectangle) {
-        this.rectangle = rectangle;
+        this.boundingRectangle = rectangle;
+    }
+
+    public int[] getBoundingCoordinates() {
+        return boundingCoordinates;
+    }
+
+    public void setBoundingCoordinates(int[] boundingCoordinates) {
+        this.boundingCoordinates = boundingCoordinates;
+    }
+
+    public int[] getContentCoordinates() {
+        return contentCoordinates;
+    }
+
+    public void setContentCoordinates(int[] contentCoordinates) {
+        this.contentCoordinates = contentCoordinates;
     }
 }
