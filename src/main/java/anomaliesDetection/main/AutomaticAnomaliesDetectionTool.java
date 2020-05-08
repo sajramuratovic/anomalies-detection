@@ -1,12 +1,17 @@
 package anomaliesDetection.main;
 
+import anomaliesDetection.layout.LayoutFactory;
+import anomaliesDetection.utils.StopwatchFactory;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-public class AutomaticAnomaliesDetection {
+import java.util.HashMap;
+
+public class AutomaticAnomaliesDetectionTool {
 
     private WebDriver webDriver;
+    static int sleep = 50;
 
     public static void main(String args[])
     {
@@ -26,4 +31,8 @@ public class AutomaticAnomaliesDetection {
         System.out.println(webDriver.getTitle());
     }
 
-}
+    public static void capturePageModel(String url, int[] widths, int sleep, boolean takeScreenshot, boolean saveDom, WebDriver wdriver, StopwatchFactory swf, HashMap<Integer, LayoutFactory> lFactories, HashMap<Integer, String> domStrings) {
+        // Create a parser for the DOM strings
+    }
+
+    }

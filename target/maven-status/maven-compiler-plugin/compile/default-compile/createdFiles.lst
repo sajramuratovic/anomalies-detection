@@ -6,7 +6,9 @@ anomaliesDetection\layout\Sibling.class
 anomaliesDetection\layout\Relationship.class
 xPert\visitors\LevelAssignVisitor.class
 xPert\visitors\UnmatchedVisitor.class
+anomaliesDetection\main\AutomaticAnomaliesDetectionTool.class
 xPert\layout\AGNodeComparator.class
+anomaliesDetection\anomaliesReporting\ResponsiveLayoutFailure.class
 xPert\visitors\ApproxMatchVisitor.class
 xPert\Matcher.class
 xPert\DomUtils.class
@@ -19,6 +21,7 @@ anomaliesDetection\layout\Layout.class
 anomaliesDetection\responsiveLayoutGraph\Node.class
 xPert\layout\AlignmentGraphFactory.class
 xPert\DomUtils$1.class
+anomaliesDetection\main\Utils.class
 xPert\DomNode$NodeType.class
 xPert\MatchResult.class
 xPert\JsonDomParser.class
@@ -28,11 +31,13 @@ xPert\content\VisualAnalysis.class
 xPert\layout\AlignmentGraph.class
 xPert\visitors\ExactMatchVisitor.class
 xPert\DomNodePair.class
+anomaliesDetection\analyse\RLGAnalyser.class
 anomaliesDetection\layout\ParentChild.class
 anomaliesDetection\utils\StopwatchFactory.class
 anomaliesDetection\layout\LayoutFactory.class
+anomaliesDetection\mutation\CSSMutator.class
 anomaliesDetection\responsiveLayoutGraph\Type.class
-anomaliesDetection\AutomaticAnomaliesDetection.class
 xPert\visitors\DomVisitor.class
+anomaliesDetection\main\RLGExtractor.class
 xPert\layout\AGNode.class
 xPert\DomNode.class
