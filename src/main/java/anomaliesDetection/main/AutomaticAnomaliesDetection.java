@@ -1,4 +1,4 @@
-package anomaliesDetection;
+package anomaliesDetection.main;
 
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
@@ -10,7 +10,7 @@ public class AutomaticAnomaliesDetection {
 
     public static void main(String args[])
     {
-//        anomaliesDetection.AutomaticAnomaliesDetection automaticAnomaliesDetection = new anomaliesDetection.AutomaticAnomaliesDetection();
+//        anomaliesDetection.main.AutomaticAnomaliesDetection automaticAnomaliesDetection = new anomaliesDetection.main.AutomaticAnomaliesDetection();
 //        automaticAnomaliesDetection.setUp();
         System.out.println("Hello World!");
     }
