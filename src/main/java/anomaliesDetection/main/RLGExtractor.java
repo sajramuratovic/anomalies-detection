@@ -48,6 +48,35 @@ public class RLGExtractor {
     HashMap<String, int[]> spotCheckWidths;
     int[] allWidths;
 
+    public RLGExtractor(String current, String fullUrl, String shortUrl, HashMap<Integer, DomNode> doms, String b, String st, boolean bs, int start, int end, int ss, String preamble, int sleep, String timeStamp, boolean baselines)  throws IOException{
+        this.current = current;
+        this.fullUrl = fullUrl;
+        this.shortUrl = shortUrl;
+        this.doms = doms;
+        this.lFactories = new HashMap<>();
+        this.browser = b;
+        this.sampleTechnique = st;
+        this.binarySearch = bs;
+        this.startW = start;
+        this.endW = end;
+        this.stepSize = ss;
+        this.preamble = preamble;
+        swf = new StopwatchFactory();
+        this.sleep = sleep;
+        breakpoints = new ArrayList<>();
+        ts = timeStamp;
+        this.baselines = baselines;
+
+        // BASELINE SCREENSHOT CAPTURE
+        if (baselines) {
+            spotCheckWidths = new HashMap<>();
+            spotCheckWidths.put("kersley", new int[] {320, 480, 768, 1024});
+            spotCheckWidths.put("responsinator", new int[] {320, 375, 384, 414, 768, 1024});
+            spotCheckWidths.put("semalt", new int[] {320, 384, 600, 768, 1024});
+            spotCheckWidths.put("wasserman", new int[] {320, 375, 414, 600, 768, 1280});
+            //runBaselines();
+        }
+    }
 
     /**
      * Manages the whole RLG extraction process from start to finish
@@ -398,5 +427,7 @@ public class RLGExtractor {
         }
         return mqCandidates;
     }
+
+
 }
 

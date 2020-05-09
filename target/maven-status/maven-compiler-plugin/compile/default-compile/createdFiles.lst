@@ -1,5 +1,6 @@
 anomaliesDetection\responsiveLayoutGraph\VisibilityConstraint.class
 xPert\layout\AGDiff.class
+anomaliesDetection\main\CommandLineParser.class
 anomaliesDetection\responsiveLayoutGraph\ResponsiveLayoutGraph.class
 anomaliesDetection\layout\Layout$1.class
 anomaliesDetection\layout\Sibling.class
