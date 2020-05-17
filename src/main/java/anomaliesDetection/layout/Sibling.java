@@ -42,42 +42,33 @@ public class Sibling extends Relationship {
         if (equals(node1.x1, node2.x1, deltaW)) {
             setLeftEdge(true);
         }
-
         if (equals(node1.x2, node2.x2, deltaW)) {
             setRightEdge(true);
         }
-
         if (equals(node1.y1, node2.y1, deltaH)) {
             setTopEdge(true);
         }
-
         if (equals(node1.y2, node2.y2, deltaH)) {
             setBottomEdge(true);
         }
-
         if (equals(midx1, midx2, deltaW)) {
             setxMid(true);
         }
-
         if (equals(midy1, midy2, deltaH)) {
             setyMid(true);
         }
-
         if ((midx1 <= node2.x1) && (node1.x2 < node2.x2)) {
             setLeftOf(true);
         }
-
         if ((node2.x2 <= midx1) && (node1.x1 > node2.x1)) {
             setRightOf(true);
         }
-
         if (node1.y2 <= midy2) {
             setAbove(true);
         }
         if (node2.y2 <= midy1) {
             setBelow(true);
         }
-
         setOverLapping(node1, node2);
     }
 

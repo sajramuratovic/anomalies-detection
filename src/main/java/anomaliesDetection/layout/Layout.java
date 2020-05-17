@@ -1,9 +1,9 @@
 package anomaliesDetection.layout;
 
 
+import com.infomatiq.jsi.Rectangle;
 import com.infomatiq.jsi.rtree.RTree;
 import gnu.trove.TIntProcedure;
-import com.infomatiq.jsi.Rectangle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,12 +31,12 @@ public class Layout {
 
         HashMap<Integer, Integer> parentMap = new HashMap<>();
         for (int c = 0; c < elements.size(); c++) {
-            java.util.List<Integer> cIDs = getChildren(c);
+            List<Integer> cIDs = getChildren(c);
             for (int i : cIDs) {
                 // Check new parent is smaller than existing
                 if (parentMap.containsKey(i)) {
                     int currentParent = parentMap.get(i);
-                    java.util.List<Integer> tempIds = getChildren(currentParent);
+                    List<Integer> tempIds = getChildren(currentParent);
                     if (tempIds.contains(c)) {
                         parentMap.put(i, c);
                     }
@@ -90,7 +90,6 @@ public class Layout {
                     if (!xpaths.get(elementId).contains(xpaths.get(i))) {
                         children.add(i);
                     }
-
                 }
                 return true;
             }

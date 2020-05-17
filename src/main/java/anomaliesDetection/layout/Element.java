@@ -27,8 +27,8 @@ public class Element {
         this.x2 = x2;
         this.y1 = y1;
         this.y2 = y2;
-        boundingCoordinates = new int[] {x1,y1,x2,y2};
-        this.boundingRectangle = new Rectangle(x1, y1, x2-x1, y2 - y1);
+        boundingCoordinates = new int[]{x1, y1, x2, y2};
+        this.boundingRectangle = new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
 
     public String getXpath() {

@@ -76,7 +76,7 @@ public class AutomaticAnomaliesDetectionTool {
 //        //launch the browser
 //        webDriver.get("https://www.google.com/");
 //        webDriver.manage().window().maximize();
-        url = "https://www.google.com/";
+        url = "https://www.pdfescape.com/windows/";
         System.out.println(current);
         scriptToExtract = Utils.readFile(current +"/resources/webdiff2.js");
         System.out.println("hello" + scriptToExtract);

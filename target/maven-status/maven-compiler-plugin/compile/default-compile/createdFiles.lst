@@ -20,6 +20,7 @@ xPert\layout\AGEdge.class
 xPert\layout\Contains.class
 anomaliesDetection\layout\Layout.class
 anomaliesDetection\responsiveLayoutGraph\Node.class
+anomaliesDetection\anomaliesReporting\CollisionFailure.class
 xPert\layout\AlignmentGraphFactory.class
 xPert\DomUtils$1.class
 anomaliesDetection\main\Utils.class
@@ -42,3 +43,4 @@ xPert\visitors\DomVisitor.class
 anomaliesDetection\main\RLGExtractor.class
 xPert\layout\AGNode.class
 xPert\DomNode.class
+anomaliesDetection\anomaliesReporting\ElementProtrusionFailure.class

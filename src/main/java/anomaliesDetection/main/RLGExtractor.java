@@ -129,7 +129,7 @@ public class RLGExtractor {
 
             this.swf.getReport().start();
 
-//          For each detected RLF, capture a screenshot for the report
+            //For each detected RLF, capture a screenshot for the report
             if (errors.size() > 0) {
                 for (ResponsiveLayoutFailure error : errors) {
                     error.captureScreenshotExample(errors.indexOf(error) + 1, shortUrl, webDriver, fullUrl, ts);
@@ -152,7 +152,6 @@ public class RLGExtractor {
             webDriver.close();
             webDriver.quit();
         }
-
     }
 
 
@@ -192,9 +191,9 @@ public class RLGExtractor {
      */
     public static int[] calculateSampleWidths(String technique, String shortUrl, WebDriver drive, int startWidth, int finalWidth, int stepSize, String preamble, ArrayList<Integer> breakpoints) {
         int[] widths = null;
-        ArrayList<Integer> widthsAL = new ArrayList<Integer>();
+        ArrayList<Integer> widthsAL = new ArrayList<>();
         if (technique.equals("uniformBP")) {
-            TreeSet<Integer> widthsTS = new TreeSet<Integer>();
+            TreeSet<Integer> widthsTS = new TreeSet<>();
             int currentWidth = startWidth;
 
             widthsTS.add(startWidth);
@@ -367,31 +366,21 @@ public class RLGExtractor {
                     } else if (cssFile.substring(0, 2).equals("//") || cssFile.substring(0, 1).equals("/")) {
                         cssUrl = new URL(base + cssFile);
                     } else {
-                        //                    System.out.println("LOCAL");
                         cssUrl = new URL(("file://" + preamble + base.replace("/index.html", "") + "/" + cssFile.replace("./", "")));
-                        //                    cssUrl = new URL(("file://" + preamble + base.split("/")[0] + "/" + base.split("/")[1] + "/" + cssFile.replace("./", "")));
                     }
-//                    System.out.println(cssUrl);
-
                     conn = cssUrl.openConnection();
 
                     BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-                    //                long start = System.nanoTime();
                     String inputLine;
                     while ((inputLine = input.readLine()) != null) {
                         contents += inputLine;
                     }
-                    //                long end = System.nanoTime();
-                    //                double duration = ((end - start) / 1000000000.0);
-                    //                System.out.println(duration);
                     contents += "\n\n";
                     cssContent[counter] = contents;
-
-
                 } catch (Exception e) {
-                    //                e.printStackTrace();
-                    //                System.out.println("Problem loading or layout the CSS file " + cssUrl.toString());
+                    e.printStackTrace();
+                    System.out.println("Problem loading or layout the CSS file " + cssUrl.toString());
                 }
                 counter++;
             }
@@ -399,12 +388,12 @@ public class RLGExtractor {
             StyleSheet ss = null;
             for (int i = 0; i < cssContent.length; i++) {
                 String s = cssContent[i];
-                //            System.out.println(s);
+                //System.out.println(s);
                 try {
                     String prettified = s;
-                    //                        CSSMutator.prettifyCss(s);
+                    // CSSMutator.prettifyCss(s);
                     StyleSheet temp = CSSFactory.parse(prettified);
-                    //                System.out.println(temp);
+                    //System.out.println(temp);
                     for (RuleBlock rb : temp.asList()) {
                         if (rb instanceof RuleMedia) {
                             RuleMedia rm = (RuleMedia) rb;
@@ -417,11 +406,11 @@ public class RLGExtractor {
                         }
                     }
                 } catch (IOException e) {
-//                    e.printStackTrace();
+                    e.printStackTrace();
                 } catch (CSSException e) {
-//                    e.printStackTrace();
+                    e.printStackTrace();
                 } catch (NullPointerException e) {
-//                    System.out.println("Null pointer for some reason on " + i);
+                    System.out.println("Null pointer for some reason on " + i);
                 }
             }
         }

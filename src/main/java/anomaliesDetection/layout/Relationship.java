@@ -3,10 +3,12 @@ package anomaliesDetection.layout;
 public abstract class Relationship {
 
     public abstract Element getNode1();
+
     public abstract Element getNode2();
 
     /**
      * Check is a approximately equal to b with the offset delta
+     *
      * @param a
      * @param b
      * @param delta

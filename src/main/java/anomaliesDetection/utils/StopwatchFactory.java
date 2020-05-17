@@ -8,20 +8,18 @@ public class StopwatchFactory {
     private StopWatch capture;
     private StopWatch sleep;
     private StopWatch extract;
+    private StopWatch rlg;
+    private StopWatch detect;
+    private StopWatch report;
+    private StopWatch process;
 
     public StopWatch getRlg() {
         return rlg;
     }
 
-    private StopWatch rlg;
-    private StopWatch detect;
-    private StopWatch report;
-
     public StopWatch getProcess() {
         return process;
     }
-
-    private StopWatch process;
 
     public StopWatch getTotal() {
         return total;

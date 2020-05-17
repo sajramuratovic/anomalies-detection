@@ -68,6 +68,7 @@ public class AlignmentConstraint {
     /**
      * Utility function which uses the set of alignment attributes to generate the labelling string for the key.
      * Labeling is used to describe the location of one element in relation to the other and how borders of each element align with each other.
+     *
      * @return the labelling string
      */
     public String generateLabelling() {
@@ -89,18 +90,24 @@ public class AlignmentConstraint {
      */
     private String setAttributesForPARENT_CHILD(boolean[] attributes) {
         String result = "";
-        if (attributes[0])
+        if (attributes[0]) {
             result += "centered";
-        if (attributes[1])
+        }
+        if (attributes[1]) {
             result += "leftJust";
-        if (attributes[2])
+        }
+        if (attributes[2]) {
             result += "rightJust";
-        if (attributes[3])
+        }
+        if (attributes[3]) {
             result += "middle";
-        if (attributes[4])
+        }
+        if (attributes[4]) {
             result += "top";
-        if (attributes[5])
+        }
+        if (attributes[5]) {
             result += "bottom";
+        }
         return result;
     }
 
@@ -108,6 +115,7 @@ public class AlignmentConstraint {
      * Sibling attributes fall into two categories, positioning and alignment. Positioning labels describe the
      * location of one element in relation to the other, while alignment labels describe how the borders of each
      * element align with each other.
+     *
      * @param attributes
      * @return result
      */

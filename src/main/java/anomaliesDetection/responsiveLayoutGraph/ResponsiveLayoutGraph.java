@@ -1,6 +1,7 @@
 package anomaliesDetection.responsiveLayoutGraph;
 
 import anomaliesDetection.layout.*;
+import anomaliesDetection.main.AutomaticAnomaliesDetectionTool;
 import anomaliesDetection.utils.StopwatchFactory;
 import com.google.common.collect.HashBasedTable;
 import org.openqa.selenium.WebDriver;
@@ -270,7 +271,6 @@ public class ResponsiveLayoutGraph {
 
             // Match the edges visible at both sample points
             checkForEdgeMatch(prev, prevToMatch, curr, currToMatch);
-//            System.out.println("MATCHED EDGES");
 
             // Pair any unmatched edges and update the alignment constraints
             HashMap<Relationship, Relationship> matchedChangingEdges = pairUnmatchedEdges(prevToMatch, currToMatch);
@@ -293,7 +293,6 @@ public class ResponsiveLayoutGraph {
                 // Update any remaining appearing edges
                 updateAppearingEdges(currToMatch, getAlignmentConstraints(), alCons, lf);
             }
-//            System.out.println("APPEARED EDGES");
             prev = lf.getRelationships();
             prevWidth = currentWidth;
         }
@@ -338,7 +337,6 @@ public class ResponsiveLayoutGraph {
                 }
             }
         }
-
         return paired;
     }
 
@@ -417,7 +415,6 @@ public class ResponsiveLayoutGraph {
             }
         }
     }
-
 
     private void updateAlignmentConstraint(Map<int[], AlignmentConstraint> cons, int disappearPoint) {
         for (int[] pair : cons.keySet()) {
@@ -613,7 +610,6 @@ public class ResponsiveLayoutGraph {
         return false;
     }
 
-
     public void checkForEdgeMatch(HashMap<String, Relationship> previousMap, HashMap<String, Relationship> previousToMatch, HashMap<String, Relationship> temp, HashMap<String, Relationship> tempToMatch) {
         String key = "", key2 = "";
         for (String sKey : previousMap.keySet()) {
@@ -668,14 +664,13 @@ public class ResponsiveLayoutGraph {
         }
     }
 
-
     public LayoutFactory getLayoutFactory(int width) {
         LayoutFactory lf = lFactories.get(width);
         if (lf != null) {
             return lf;
         } else {
             if (!lFactories.containsKey(width)) {
-                //Tool.capturePageModel(url, new int[]{width}, 50, false, false, wdriver, swf, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionTool.capturePageModel(url, new int[]{width}, 50, false, false, wdriver, swf, lFactories, new HashMap<>());
                 alreadyGathered.add(width);
             }
             return lFactories.get(width);
@@ -692,7 +687,6 @@ public class ResponsiveLayoutGraph {
                 if (ac.type == Type.PARENT_CHILD) {
                     Node child = this.nodes.get(ac.node2.getxPath());
                     child.addAlignmentConstraint(ac);
-                    ;
                 }
             } catch (NullPointerException e) {
                 System.out.println("Tried adding parent constraint with " + ac);
@@ -740,24 +734,24 @@ public class ResponsiveLayoutGraph {
     }
 
     public void captureExtraDoms(int[] widths) {
-/*        if (widths.length == 2) {
+        if (widths.length == 2) {
             if ((!alreadyGathered.contains(widths[0])) && (!alreadyGathered.contains(widths[1]))) {
-                Tool.capturePageModel(url, widths, sleep, false, false, wdriver, swf, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionTool.capturePageModel(url, widths, sleep, false, false, wdriver, swf, lFactories, new HashMap<>());
                 alreadyGathered.add(widths[0]);
                 alreadyGathered.add(widths[1]);
             } else if (!alreadyGathered.contains(widths[0])) {
-                Tool.capturePageModel(url, new int[]{widths[0]}, sleep, false, false, wdriver, swf, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionTool.capturePageModel(url, new int[]{widths[0]}, sleep, false, false, wdriver, swf, lFactories, new HashMap<>());
                 alreadyGathered.add(widths[0]);
             } else if (!alreadyGathered.contains(widths[1])) {
-                Tool.capturePageModel(url, new int[]{widths[1]}, sleep, false, false, wdriver, swf, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionTool.capturePageModel(url, new int[]{widths[1]}, sleep, false, false, wdriver, swf, lFactories, new HashMap<>());
                 alreadyGathered.add(widths[1]);
             }
         } else if (widths.length == 1) {
             if (!alreadyGathered.contains(widths[0])) {
-                Tool.capturePageModel(url, new int[]{widths[0]}, sleep, false, false, wdriver, swf, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionTool.capturePageModel(url, new int[]{widths[0]}, sleep, false, false, wdriver, swf, lFactories, new HashMap<>());
                 alreadyGathered.add(widths[0]);
             }
-        }*/
+        }
     }
 
     public HashBasedTable<String, int[], AlignmentConstraint> getAlignmentConstraints() {
