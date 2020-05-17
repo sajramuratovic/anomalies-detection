@@ -8,11 +8,26 @@
     <artifactId>AutomaticAnomaliesDetection</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <properties>
-        <!-- Setting the -source and -target of the Java Compiler -->
+<!--    <properties>
+        &lt;!&ndash; Setting the -source and -target of the Java Compiler &ndash;&gt;
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-    </properties>
+    </properties>-->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 
     <repositories>
         <repository>
@@ -101,7 +116,6 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.5</version>
         </dependency>
-
 
     </dependencies>
 

@@ -2,11 +2,21 @@ package anomaliesDetection.main;
 
 import anomaliesDetection.layout.LayoutFactory;
 import anomaliesDetection.utils.StopwatchFactory;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import xPert.DomNode;
 import xPert.JsonDomParser;
 
@@ -18,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-public class AutomaticAnomaliesDetectionTool {
+public class AutomaticAnomaliesDetectionTool extends Application {
 
     private WebDriver webDriver;
     //public String current;
@@ -41,7 +51,7 @@ public class AutomaticAnomaliesDetectionTool {
 
     static String anomalies = "/Users/sajram/Desktop/MagistarskiImplementacija/anomalies-detection/";
 
-    public AutomaticAnomaliesDetectionTool(){
+    public AutomaticAnomaliesDetectionTool() {
         startWidth = commandLineParser.startWidth;
         finalWidth = commandLineParser.endWidth;
 
@@ -64,27 +74,66 @@ public class AutomaticAnomaliesDetectionTool {
         url = commandLineParser.url;
     }
 
-    public static void main(String args[]) throws IOException {
-        anomaliesDetection.main.AutomaticAnomaliesDetectionTool automaticAnomaliesDetection = new anomaliesDetection.main.AutomaticAnomaliesDetectionTool();
-        automaticAnomaliesDetection.setUp();
+    /*    public static void main(String args[]) throws IOException {
+     *//*  anomaliesDetection.main.AutomaticAnomaliesDetectionTool automaticAnomaliesDetection = new anomaliesDetection.main.AutomaticAnomaliesDetectionTool();
+        automaticAnomaliesDetection.setUp();*//*
+
+        System.out.println("Hello World!");
+    }*/
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
-    public void setUp() throws IOException {
-        String current = new java.io.File( "." ).getCanonicalPath();
-        System.setProperty("webdriver.chrome.driver", current + "/resources/chromedriver.exe");
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        // TODO Auto-generated method stub
+        primaryStage.setTitle("AUTOMATSKA DETEKCIJA ANOMALIJA U LAYOUTIMA WEB STRANICA");
+        Label label = new Label("Unesi URL stranice:");
+        TextField textField = new TextField();
+        Button btn = new Button("Izgenerisi izvjestaj");
+        btn.setOnAction(new EventHandler<ActionEvent>() {
 
-        //url = "https://www.pdfescape.com/windows/";
+            @Override
+            public void handle(ActionEvent event) {
+                // TODO Auto-generated method stub
+                System.out.println("Entered text is " + textField.getText());
+                try {
+                    setUp(textField.getText());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                textField.clear();
+            }
+        });
+        BorderPane pane = new BorderPane();
+        pane.setPadding(new Insets(70));
+        VBox paneCenter = new VBox();
+        paneCenter.setSpacing(10);
+        pane.setCenter(paneCenter);
+        paneCenter.getChildren().add(label);
+        paneCenter.getChildren().add(textField);
+        paneCenter.getChildren().add(btn);
+        Scene scene = new Scene(pane, 600, 400);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+
+    public void setUp(String urlWebStranice) throws IOException {
+        String current = new java.io.File(".").getCanonicalPath();
+        System.setProperty("webdriver.chrome.driver", current + "/resources/chromedriver.exe");
+        url = urlWebStranice;
         System.out.println(current);
-        scriptToExtract = Utils.readFile(current +"/resources/webdiff2.js");
+        scriptToExtract = Utils.readFile(current + "/resources/webdiff2.js");
 
         try {
             Date date = new Date();
             Format formatter = new SimpleDateFormat("YYYY-MM-dd_hh-mm-ss");
             String timeStamp = formatter.format(date);
             RLGExtractor extractor = new RLGExtractor(current, url, url, oracleDoms, browser, sampleTechnique, binarySearch, startWidth, finalWidth, stepSize, null, sleep, timeStamp, baselines);
-
             extractor.extract();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -98,14 +147,15 @@ public class AutomaticAnomaliesDetectionTool {
 
     /**
      * This method samples the DOM of a webpage at a set of viewports, and saves the DOMs into a HashMap
+     *
      * @param url        The url of the webpage
-     * @param widths    The viewport widths to sample
+     * @param widths     The viewport widths to sample
      * @param domStrings
      */
     public static void capturePageModel(String url, int[] widths, int sleep, boolean takeScreenshot, boolean saveDom, WebDriver wdriver, StopwatchFactory swf, HashMap<Integer, LayoutFactory> lFactories, HashMap<Integer, String> domStrings) {
         // Create a parser for the DOM strings
         JsonDomParser parser = new JsonDomParser();
-        File domFile=null;
+        File domFile = null;
         try {
             // Set up storage directory
             String outFolder = "";
