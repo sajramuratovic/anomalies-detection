@@ -72,14 +72,10 @@ public class AutomaticAnomaliesDetectionTool {
     public void setUp() throws IOException {
         String current = new java.io.File( "." ).getCanonicalPath();
         System.setProperty("webdriver.chrome.driver", current + "/resources/chromedriver.exe");
-//        webDriver = new ChromeDriver();
-//        //launch the browser
-//        webDriver.get("https://www.google.com/");
-//        webDriver.manage().window().maximize();
-        url = "https://www.pdfescape.com/windows/";
+
+        //url = "https://www.pdfescape.com/windows/";
         System.out.println(current);
         scriptToExtract = Utils.readFile(current +"/resources/webdiff2.js");
-        System.out.println("hello" + scriptToExtract);
 
         try {
             Date date = new Date();
@@ -134,7 +130,6 @@ public class AutomaticAnomaliesDetectionTool {
 
                 while (!consecutiveMatches) {
                     // Extract the DOM and save it to the HashMap.
-//                    wdriver.manage().timeouts().implicitlyWait(sleep, TimeUnit.MILLISECONDS);
                     String extractedDom = extractDOM(wdriver, scriptToExtract);
                     if (previous.equals(extractedDom)) {
 
@@ -145,7 +140,6 @@ public class AutomaticAnomaliesDetectionTool {
                         }
                         consecutiveMatches = true;
                     } else {
-
                         previous = extractedDom;
                     }
 
