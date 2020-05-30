@@ -7,19 +7,24 @@ import anomaliesDetection.mutation.CSSMutator;
 import anomaliesDetection.responsiveLayoutGraph.ResponsiveLayoutGraph;
 import anomaliesDetection.utils.StopwatchFactory;
 import cz.vutbr.web.css.*;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import xPert.DomNode;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,7 +79,7 @@ public class RLGExtractor {
             spotCheckWidths.put("responsinator", new int[] {320, 375, 384, 414, 768, 1024});
             spotCheckWidths.put("semalt", new int[] {320, 384, 600, 768, 1024});
             spotCheckWidths.put("wasserman", new int[] {320, 375, 414, 600, 768, 1280});
-            //runBaselines();
+            runBaselines();
         }
     }
 
@@ -85,6 +90,7 @@ public class RLGExtractor {
         try {
             // Start the timer
             this.swf.getRlg().start();
+
             webDriver = new ChromeDriver();
 
             JavascriptExecutor js = (JavascriptExecutor) webDriver;
@@ -107,7 +113,7 @@ public class RLGExtractor {
             initialDoms = sampleWidths.length;
 
             // Capture the layout of the page at each width
-            AutomaticAnomaliesDetectionTool.capturePageModel(fullUrl, sampleWidths, sleep, false, false, webDriver, swf, lFactories, new HashMap<>());
+            AutomaticAnomaliesDetectionTool.capturePageModel(fullUrl, sampleWidths, false, webDriver, lFactories, new HashMap<>());
             ArrayList<LayoutFactory> oracleLFs = new ArrayList<>();
 
             // For each sampled width, analyse the DOM to construct the specific layout structure
@@ -159,7 +165,7 @@ public class RLGExtractor {
     }
 
     public static BufferedImage getScreenshot(int captureWidth, int errorID, HashMap<Integer, LayoutFactory> lfs, WebDriver d, String fullUrl) {
-        AutomaticAnomaliesDetectionTool.capturePageModel(fullUrl, new int[]{captureWidth}, AutomaticAnomaliesDetectionTool.sleep, false, false, d, new StopwatchFactory(), lfs, new HashMap<>());
+        AutomaticAnomaliesDetectionTool.capturePageModel(fullUrl, new int[]{captureWidth},  false, d, lfs, new HashMap<>());
         return Utils.getScreenshot(fullUrl, captureWidth, AutomaticAnomaliesDetectionTool.sleep, d, errorID);
     }
 
@@ -277,6 +283,41 @@ public class RLGExtractor {
             return widths;
         } else {
             return new int[]{};
+        }
+    }
+
+    private void runBaselines() throws IOException {
+        webDriver.manage().window().setSize(new org.openqa.selenium.Dimension(1400, 1000));
+        webDriver.get(fullUrl);
+        File spotcheckDir, exhaustiveDir;
+        if (!shortUrl.contains("www")) {
+            String[] splits = shortUrl.split("/");
+            String webpage = splits[0];
+            String mutant = "index";
+            spotcheckDir = new File(AutomaticAnomaliesDetectionTool.anomalies + "/screenshots/" + webpage + "/spotcheck/");
+            exhaustiveDir = new File(AutomaticAnomaliesDetectionTool.anomalies + "/screenshots/" + webpage + "/exhaustive/");
+        } else {
+            String[] splits = shortUrl.split("www.");
+            spotcheckDir = new File(AutomaticAnomaliesDetectionTool.anomalies + "/screenshots/" + splits[1] + "/spotcheck/");
+            exhaustiveDir = new File(AutomaticAnomaliesDetectionTool.anomalies + "/screenshots/" + splits[1] + "/exhaustive/");
+        }
+        for (String scTechnique : spotCheckWidths.keySet()) {
+            File scTechFile = new File(spotcheckDir + "/" + scTechnique + "/");
+            try {
+                FileUtils.forceMkdir(scTechFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            int[] scws = spotCheckWidths.get(scTechnique);
+            for (int scw : scws) {
+                BufferedImage ss = Utils.getScreenshot(shortUrl, scw, sleep*2, webDriver, scw);
+                BufferedImage dest = ss.getSubimage(0, 0, scw, ss.getHeight());
+                Graphics2D g2d = ss.createGraphics();
+                g2d.setColor(Color.RED);
+                g2d.drawRect(0,0, scw, ss.getHeight());
+                File outputfile = new File(scTechFile + "/" + scw + ".png");
+                ImageIO.write(dest, "png", outputfile);
+            }
         }
     }
 

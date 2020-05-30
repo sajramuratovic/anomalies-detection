@@ -1,15 +1,14 @@
 package anomaliesDetection.main;
 
 import anomaliesDetection.layout.LayoutFactory;
-import anomaliesDetection.utils.StopwatchFactory;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -30,55 +29,39 @@ import java.util.HashMap;
 
 public class AutomaticAnomaliesDetectionTool extends Application {
 
-    private WebDriver webDriver;
+    //Web Page url
     public String url;
+    private String sampleTechnique = "uniformBP";
+    static String scriptToExtract;
+    //the browser to use for the test run
+    private String browser = "chrome";
 
+    // start and end width for sampling
+    private int startWidth = 320;
+    private int finalWidth = 1400;
+    // step size for sampling
+    private int stepSize = 60;
     static int sleep = 50;
     static HashMap<Integer, DomNode> oracleDoms;
-    private String sampleTechnique = "uniformBP";
+
+    //Use binary search or not
     private boolean binarySearch = true;
-    private int startWidth;
-    private int finalWidth;
-    private int stepSize;
+
+    //Whether to run the baseline approaches
     private boolean baselines;
-    private static int browserHeight;
-
-    static String scriptToExtract;
-    private String browser;
-
-    private CommandLineParser commandLineParser = new CommandLineParser();
+    private static int browserHeight = 600;
+    ;
 
     static String anomalies = "/Users/sajram/Desktop/MagistarskiImplementacija/anomalies-detection/";
 
     public AutomaticAnomaliesDetectionTool() {
-        startWidth = commandLineParser.startWidth;
-        finalWidth = commandLineParser.endWidth;
-
         java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth();
         double height = screenSize.getHeight();
         if (finalWidth > width) {
             finalWidth = (int) width;
         }
-        browserHeight = 600;
-
-        if (commandLineParser.ss != -1) {
-            stepSize = commandLineParser.ss;
-        }
-
-        sampleTechnique = commandLineParser.sampling;
-        binarySearch = commandLineParser.binary;
-        baselines = commandLineParser.baselines;
-        browser = commandLineParser.browser;
-        url = commandLineParser.url;
     }
-
-    /*    public static void main(String args[]) throws IOException {
-     *//*  anomaliesDetection.main.AutomaticAnomaliesDetectionTool automaticAnomaliesDetection = new anomaliesDetection.main.AutomaticAnomaliesDetectionTool();
-        automaticAnomaliesDetection.setUp();*//*
-
-        System.out.println("Hello World!");
-    }*/
 
     public static void main(String[] args) {
         launch(args);
@@ -119,25 +102,25 @@ public class AutomaticAnomaliesDetectionTool extends Application {
     }
 
 
-    public void setUp(String urlWebStranice) throws IOException {
+    public void setUp(String webPageUrl) throws IOException {
+
         String current = new java.io.File(".").getCanonicalPath();
         System.setProperty("webdriver.chrome.driver", current + "/resources/chromedriver.exe");
-        url = urlWebStranice;
-        System.out.println(current);
+        url = webPageUrl;
         scriptToExtract = Utils.readFile(current + "/resources/webdiff2.js");
 
         try {
             Date date = new Date();
             Format formatter = new SimpleDateFormat("YYYY-MM-dd_hh-mm-ss");
             String timeStamp = formatter.format(date);
-            RLGExtractor extractor = new RLGExtractor(current, url, url, oracleDoms, browser, sampleTechnique, binarySearch, startWidth, finalWidth, stepSize, null, sleep, timeStamp, baselines);
+            RLGExtractor extractor = new RLGExtractor(current, url, url, oracleDoms, browser, sampleTechnique,
+                    binarySearch, startWidth, finalWidth, stepSize, null, sleep, timeStamp, baselines);
             extractor.extract();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
-
 
     /**
      * This method samples the DOM of a webpage at a set of viewports, and saves the DOMs into a HashMap
@@ -146,7 +129,7 @@ public class AutomaticAnomaliesDetectionTool extends Application {
      * @param widths     The viewport widths to sample
      * @param domStrings
      */
-    public static void capturePageModel(String url, int[] widths, int sleep, boolean takeScreenshot, boolean saveDom, WebDriver wdriver, StopwatchFactory swf, HashMap<Integer, LayoutFactory> lFactories, HashMap<Integer, String> domStrings) {
+    public static void capturePageModel(String url, int[] widths, boolean saveDom, WebDriver webDriver, HashMap<Integer, LayoutFactory> layoutFactories, HashMap<Integer, String> domStrings) {
         // Create a parser for the DOM strings
         JsonDomParser parser = new JsonDomParser();
         File domFile = null;
@@ -168,16 +151,16 @@ public class AutomaticAnomaliesDetectionTool extends Application {
                 boolean consecutiveMatches = false;
 
                 // Resize the browser window
-                wdriver.manage().window().setSize(new Dimension(w, browserHeight));
+                webDriver.manage().window().setSize(new Dimension(w, browserHeight));
                 String previous = "";
 
 
                 while (!consecutiveMatches) {
                     // Extract the DOM and save it to the HashMap.
-                    String extractedDom = extractDOM(wdriver, scriptToExtract);
+                    String extractedDom = extractDOM(webDriver, scriptToExtract);
                     if (previous.equals(extractedDom)) {
 
-                        lFactories.put(w, new LayoutFactory(extractedDom));
+                        layoutFactories.put(w, new LayoutFactory(extractedDom));
                         domStrings.put(w, extractedDom);
                         if (saveDom) {
                             FileUtils.writeStringToFile(domFile, extractedDom);
@@ -193,7 +176,7 @@ public class AutomaticAnomaliesDetectionTool extends Application {
         }
     }
 
-    public static String extractDOM(WebDriver cdriver, String script) throws IOException {
-        return (String) ((JavascriptExecutor) cdriver).executeScript(script);
+    public static String extractDOM(WebDriver webDriver, String script) throws IOException {
+        return (String) ((JavascriptExecutor) webDriver).executeScript(script);
     }
 }
