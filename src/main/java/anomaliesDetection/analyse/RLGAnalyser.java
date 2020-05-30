@@ -4,6 +4,7 @@ import anomaliesDetection.anomaliesReporting.CollisionFailure;
 import anomaliesDetection.anomaliesReporting.ElementProtrusionFailure;
 import anomaliesDetection.anomaliesReporting.ResponsiveLayoutFailure;
 import anomaliesDetection.layout.LayoutFactory;
+import anomaliesDetection.main.PDFUtils;
 import anomaliesDetection.responsiveLayoutGraph.AlignmentConstraint;
 import anomaliesDetection.responsiveLayoutGraph.Node;
 import anomaliesDetection.responsiveLayoutGraph.ResponsiveLayoutGraph;
@@ -159,15 +160,12 @@ public class RLGAnalyser {
 
     public void writeReport(String url, ArrayList<ResponsiveLayoutFailure> errors, String ts) {
         PrintWriter output = null;
-        PrintWriter output2 = null;
-        PrintWriter output3 = null;
         try {
             File outputFile = null;
             if (!url.contains("www.") && (!url.contains("http://"))) {
                 String[] splits = url.split("/");
                 String webpage = splits[0];
                 String mutant = "index-" + ts;
-                //                    splits[1];
                 try {
                     outputFile = new File(new File(".").getCanonicalPath() + "/../reports/" + webpage + "/" + mutant + "/");
                 } catch (IOException e) {
@@ -193,30 +191,7 @@ public class RLGAnalyser {
                 }
             }
             FileUtils.forceMkdir(outputFile);
-            File dir = new File(outputFile + "/fault-report.txt");
-//            File countDir = new File(outputFile + "/error-count.txt");
-//            File typeFile = new File(outputFile + "/error-types.txt");
-            File classification = new File(outputFile + "/classification.txt");
-            File actualFaultsFile = new File(outputFile + "/../actual-fault-count.txt");
-//            classification.createNewFile();
-//            actualFaultsFile.createNewFile();
-            output = new PrintWriter(dir);
-//            output2 = new PrintWriter(countDir);
-//            output3 = new PrintWriter(typeFile);
-            if (errors.size() > 0) {
-//                output2.append(Integer.toString(errors.size()));
-                for (ResponsiveLayoutFailure rle : errors) {
-                    output.append(rle.toString() + "\n\n");
-//                    output3.append(errorToKey(rle) + "\n");
-                }
-            } else {
-                output.append("NO FAULTS DETECTED.");
-//                output2.append("0");
-            }
-
-            output.close();
-//            output2.close();
-//            output3.close();
+            PDFUtils.generatePDFReport(outputFile, errors);
 
         } catch (Exception e) {
             e.printStackTrace();

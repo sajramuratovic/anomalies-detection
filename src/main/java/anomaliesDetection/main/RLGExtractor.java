@@ -85,7 +85,6 @@ public class RLGExtractor {
         try {
             // Start the timer
             this.swf.getRlg().start();
-
             webDriver = new ChromeDriver();
 
             JavascriptExecutor js = (JavascriptExecutor) webDriver;

@@ -21,9 +21,6 @@ import java.util.HashSet;
 public class ElementProtrusionFailure extends ResponsiveLayoutFailure {
     AlignmentConstraint ac1, ac2, ofCon, match;
     HashMap<Node, ArrayList<AlignmentConstraint>> map;
-
-
-
     Node overflowed;
     Node intendedParent;
     ArrayList<Node> newParents;
@@ -37,7 +34,6 @@ public class ElementProtrusionFailure extends ResponsiveLayoutFailure {
         this.map = m;
         intendedParent = ip;
         overflowed = n;
-//        System.out.println(n);
     }
 
     public ElementProtrusionFailure(Node o, AlignmentConstraint ac) {
@@ -47,26 +43,7 @@ public class ElementProtrusionFailure extends ResponsiveLayoutFailure {
     }
 
     public String toString() {
-//        if (ofCon != null) {
         return overflowed.getxPath() + " OVERFLOWED ITS PARENT BETWEEN " + ofCon.getMin() + " AND " + ofCon.getMax() + "\n\t" + ofCon + "\n\t" + match;
-//        } else {
-//            String result = "OVERFLOWING ELEMENT ERROR: ";
-//            result += "\n" + intendedParent.getXpath() + " was the intended parent of " + overflowed.getXpath();
-//            for (AlignmentConstraint ac : map.get(intendedParent)) {
-//                result += "\n\t" + ac.getMin() + " -> " + ac.getMax();
-//            }
-//
-//            for (Node n : map.keySet()) {
-//                if (n != intendedParent) {
-//                    result+= "\nOverflowed into: " + n.getXpath();
-//                    for (AlignmentConstraint ac : map.get(n)) {
-//                        result += "\n\t" + ac.getMin() + " -> " + ac.getMax();
-//                    }
-//                }
-//
-//            }
-//            return result;
-//        }
     }
 
     /**

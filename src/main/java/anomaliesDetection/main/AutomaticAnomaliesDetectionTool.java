@@ -31,7 +31,6 @@ import java.util.HashMap;
 public class AutomaticAnomaliesDetectionTool extends Application {
 
     private WebDriver webDriver;
-    //public String current;
     public String url;
 
     static int sleep = 50;
@@ -140,11 +139,6 @@ public class AutomaticAnomaliesDetectionTool extends Application {
     }
 
 
-/*    public static void detectAnomalies(String current, String url, String browser, String sampleTechnique, boolean binarySearch,
-                                       int startWidth, int finalWidth, int stepSize, boolean baselines) {
-
-    }*/
-
     /**
      * This method samples the DOM of a webpage at a set of viewports, and saves the DOMs into a HashMap
      *
@@ -192,8 +186,6 @@ public class AutomaticAnomaliesDetectionTool extends Application {
                     } else {
                         previous = extractedDom;
                     }
-
-
                 }
             }
         } catch (Exception e) {
