@@ -4,6 +4,7 @@ anomaliesDetection\responsiveLayoutGraph\ResponsiveLayoutGraph.class
 anomaliesDetection\layout\Layout$1.class
 anomaliesDetection\layout\Sibling.class
 anomaliesDetection\layout\Relationship.class
+anomaliesDetection\utils\AlertHelper.class
 xPert\visitors\LevelAssignVisitor.class
 xPert\visitors\UnmatchedVisitor.class
 anomaliesDetection\main\AutomaticAnomaliesDetectionTool.class
@@ -15,11 +16,11 @@ xPert\DomUtils.class
 anomaliesDetection\layout\Element.class
 xPert\visitors\NodeCountVisitor.class
 xPert\layout\Sibling.class
+anomaliesDetection\main\AutomaticAnomaliesDetectionController.class
 xPert\layout\AGEdge.class
 xPert\layout\Contains.class
 anomaliesDetection\layout\Layout.class
 anomaliesDetection\responsiveLayoutGraph\Node.class
-anomaliesDetection\main\AutomaticAnomaliesDetectionTool$1.class
 anomaliesDetection\anomaliesReporting\CollisionFailure.class
 xPert\layout\AlignmentGraphFactory.class
 xPert\DomUtils$1.class

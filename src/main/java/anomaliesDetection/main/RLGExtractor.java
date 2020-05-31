@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,7 +113,7 @@ public class RLGExtractor {
             initialDoms = sampleWidths.length;
 
             // Capture the layout of the page at each width
-            AutomaticAnomaliesDetectionTool.capturePageModel(fullUrl, sampleWidths, false, webDriver, lFactories, new HashMap<>());
+            AutomaticAnomaliesDetectionController.capturePageModel(fullUrl, sampleWidths, false, webDriver, lFactories, new HashMap<>());
             ArrayList<LayoutFactory> oracleLFs = new ArrayList<>();
 
             // For each sampled width, analyse the DOM to construct the specific layout structure
@@ -165,8 +165,8 @@ public class RLGExtractor {
     }
 
     public static BufferedImage getScreenshot(int captureWidth, int errorID, HashMap<Integer, LayoutFactory> lfs, WebDriver d, String fullUrl) {
-        AutomaticAnomaliesDetectionTool.capturePageModel(fullUrl, new int[]{captureWidth},  false, d, lfs, new HashMap<>());
-        return Utils.getScreenshot(fullUrl, captureWidth, AutomaticAnomaliesDetectionTool.sleep, d, errorID);
+        AutomaticAnomaliesDetectionController.capturePageModel(fullUrl, new int[]{captureWidth},  false, d, lfs, new HashMap<>());
+        return Utils.getScreenshot(fullUrl, captureWidth, AutomaticAnomaliesDetectionController.sleep, d, errorID);
     }
 
     public StopwatchFactory getSwf() {
@@ -294,12 +294,12 @@ public class RLGExtractor {
             String[] splits = shortUrl.split("/");
             String webpage = splits[0];
             String mutant = "index";
-            spotcheckDir = new File(AutomaticAnomaliesDetectionTool.anomalies + "/screenshots/" + webpage + "/spotcheck/");
-            exhaustiveDir = new File(AutomaticAnomaliesDetectionTool.anomalies + "/screenshots/" + webpage + "/exhaustive/");
+            spotcheckDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + webpage + "/spotcheck/");
+            exhaustiveDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + webpage + "/exhaustive/");
         } else {
             String[] splits = shortUrl.split("www.");
-            spotcheckDir = new File(AutomaticAnomaliesDetectionTool.anomalies + "/screenshots/" + splits[1] + "/spotcheck/");
-            exhaustiveDir = new File(AutomaticAnomaliesDetectionTool.anomalies + "/screenshots/" + splits[1] + "/exhaustive/");
+            spotcheckDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + splits[1] + "/spotcheck/");
+            exhaustiveDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + splits[1] + "/exhaustive/");
         }
         for (String scTechnique : spotCheckWidths.keySet()) {
             File scTechFile = new File(spotcheckDir + "/" + scTechnique + "/");

@@ -129,6 +129,14 @@
             <version>5.5.13</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-fxml -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>15-ea+5</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>

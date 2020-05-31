@@ -1,7 +1,7 @@
 package anomaliesDetection.responsiveLayoutGraph;
 
 import anomaliesDetection.layout.*;
-import anomaliesDetection.main.AutomaticAnomaliesDetectionTool;
+import anomaliesDetection.main.AutomaticAnomaliesDetectionController;
 import anomaliesDetection.utils.StopwatchFactory;
 import com.google.common.collect.HashBasedTable;
 import org.openqa.selenium.WebDriver;
@@ -670,7 +670,7 @@ public class ResponsiveLayoutGraph {
             return lf;
         } else {
             if (!lFactories.containsKey(width)) {
-                AutomaticAnomaliesDetectionTool.capturePageModel(url, new int[]{width}, false, wdriver, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionController.capturePageModel(url, new int[]{width}, false, wdriver, lFactories, new HashMap<>());
                 alreadyGathered.add(width);
             }
             return lFactories.get(width);
@@ -736,19 +736,19 @@ public class ResponsiveLayoutGraph {
     public void captureExtraDoms(int[] widths) {
         if (widths.length == 2) {
             if ((!alreadyGathered.contains(widths[0])) && (!alreadyGathered.contains(widths[1]))) {
-                AutomaticAnomaliesDetectionTool.capturePageModel(url, widths, false, wdriver, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionController.capturePageModel(url, widths, false, wdriver, lFactories, new HashMap<>());
                 alreadyGathered.add(widths[0]);
                 alreadyGathered.add(widths[1]);
             } else if (!alreadyGathered.contains(widths[0])) {
-                AutomaticAnomaliesDetectionTool.capturePageModel(url, new int[]{widths[0]}, false, wdriver, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionController.capturePageModel(url, new int[]{widths[0]}, false, wdriver, lFactories, new HashMap<>());
                 alreadyGathered.add(widths[0]);
             } else if (!alreadyGathered.contains(widths[1])) {
-                AutomaticAnomaliesDetectionTool.capturePageModel(url, new int[]{widths[1]}, false, wdriver, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionController.capturePageModel(url, new int[]{widths[1]}, false, wdriver, lFactories, new HashMap<>());
                 alreadyGathered.add(widths[1]);
             }
         } else if (widths.length == 1) {
             if (!alreadyGathered.contains(widths[0])) {
-                AutomaticAnomaliesDetectionTool.capturePageModel(url, new int[]{widths[0]}, false, wdriver, lFactories, new HashMap<>());
+                AutomaticAnomaliesDetectionController.capturePageModel(url, new int[]{widths[0]}, false, wdriver, lFactories, new HashMap<>());
                 alreadyGathered.add(widths[0]);
             }
         }
