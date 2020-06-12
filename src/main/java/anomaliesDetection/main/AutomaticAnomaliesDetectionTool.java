@@ -21,7 +21,7 @@ public class AutomaticAnomaliesDetectionTool extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        URL url = new File("resources/fxml/settings.fxml").toURI().toURL();
+        URL url = new File("resources/fxml/anomaliesDetection.fxml").toURI().toURL();
         Parent root = FXMLLoader.load(url);
         primaryStage.setScene(new Scene(root));
         primaryStage.initStyle(StageStyle.UNDECORATED);
