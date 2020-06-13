@@ -131,7 +131,7 @@ public class RLGExtractor {
             //For each detected RLF, capture a screenshot for the report
             if (errors.size() > 0) {
                 for (ResponsiveLayoutAnomaly error : errors) {
-                    error.captureScreenshotExample(errors.indexOf(error) + 1, url, webDriver, url, ts);
+                    error.captureScreenshotExample(errors.indexOf(error) + 1, url, webDriver, ts);
                 }
             }
 

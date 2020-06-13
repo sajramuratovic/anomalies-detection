@@ -40,7 +40,7 @@ public class ElementProtrusionAnomaly extends ResponsiveLayoutAnomaly {
      * @param timeStamp The time stamp of the tool execution to uniquely identify different full test reports
      */
     @Override
-    public void captureScreenshotExample(int errorID, String url, WebDriver webDriver, String fullUrl, String timeStamp) {
+    public void captureScreenshotExample(int errorID, String url, WebDriver webDriver, String timeStamp) {
         try {
             // Determine the mid point of the constraint as that's what the browser will be resized to
             int captureWidth = (ofCon.getMin() + ofCon.getMax()) / 2;
@@ -49,7 +49,7 @@ public class ElementProtrusionAnomaly extends ResponsiveLayoutAnomaly {
             HashMap<Integer, LayoutFactory> lfs = new HashMap<>();
 
             // Capture the image and the DOM
-            BufferedImage img = RLGExtractor.getScreenshot(captureWidth, errorID, lfs, webDriver, fullUrl);
+            BufferedImage img = RLGExtractor.getScreenshot(captureWidth, errorID, lfs, webDriver, url);
 
             // Get the coordinates of the two overflowing elements
             LayoutFactory lf = lfs.get(captureWidth);

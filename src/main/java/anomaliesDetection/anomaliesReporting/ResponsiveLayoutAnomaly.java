@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 public abstract class ResponsiveLayoutAnomaly {
 
-    public abstract void captureScreenshotExample(int errorID, String url, WebDriver webDriver, String fullUrl, String timeStamp);
+    public abstract void captureScreenshotExample(int errorID, String url, WebDriver webDriver,  String timeStamp);
 
     public abstract HashSet<Node> getNodes();
 

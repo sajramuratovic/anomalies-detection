@@ -27,13 +27,13 @@ public class CollisionAnomaly extends ResponsiveLayoutAnomaly {
     }
 
     @Override
-    public void captureScreenshotExample(int errorID, String url, WebDriver webDriver, String fullUrl, String timeStamp) {
+    public void captureScreenshotExample(int errorID, String url, WebDriver webDriver, String timeStamp) {
         try {
             int captureWidth = (constraint.getMin() + constraint.getMax()) / 2;
 
             HashMap<Integer, LayoutFactory> lfs = new HashMap<>();
 
-            BufferedImage img = RLGExtractor.getScreenshot(captureWidth, errorID, lfs, webDriver, fullUrl);
+            BufferedImage img = RLGExtractor.getScreenshot(captureWidth, errorID, lfs, webDriver, url);
 
             LayoutFactory lf = lfs.get(captureWidth);
             Element e1 = lf.getElementMap().get(constraint.getNode1().getxPath());
