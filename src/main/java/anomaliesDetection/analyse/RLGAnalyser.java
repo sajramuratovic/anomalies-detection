@@ -1,14 +1,12 @@
 package anomaliesDetection.analyse;
 
-import anomaliesDetection.anomaliesReporting.CollisionFailure;
-import anomaliesDetection.anomaliesReporting.ElementProtrusionFailure;
-import anomaliesDetection.anomaliesReporting.ResponsiveLayoutFailure;
+import anomaliesDetection.anomaliesReporting.CollisionAnomaly;
+import anomaliesDetection.anomaliesReporting.ElementProtrusionAnomaly;
+import anomaliesDetection.anomaliesReporting.ResponsiveLayoutAnomaly;
+import anomaliesDetection.anomaliesReporting.ViewportProtrusionAnomaly;
 import anomaliesDetection.layout.LayoutFactory;
-import anomaliesDetection.main.PDFUtils;
-import anomaliesDetection.responsiveLayoutGraph.AlignmentConstraint;
-import anomaliesDetection.responsiveLayoutGraph.Node;
-import anomaliesDetection.responsiveLayoutGraph.ResponsiveLayoutGraph;
-import anomaliesDetection.responsiveLayoutGraph.Type;
+import anomaliesDetection.utils.PDFUtils;
+import anomaliesDetection.responsiveLayoutGraph.*;
 import com.google.common.collect.HashBasedTable;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
@@ -16,14 +14,12 @@ import org.openqa.selenium.WebDriver;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class RLGAnalyser {
 
     ResponsiveLayoutGraph responsiveLayoutGraph;
-    ArrayList<ResponsiveLayoutFailure> errors;
+    ArrayList<ResponsiveLayoutAnomaly> errors;
     WebDriver driver;
     String url;
     ArrayList<Integer> bpoints;
@@ -43,75 +39,130 @@ public class RLGAnalyser {
         errors = new ArrayList<>();
     }
 
-    public ArrayList<ResponsiveLayoutFailure> analyse() {
+    public ArrayList<ResponsiveLayoutAnomaly> analyse() {
 
-        //checkForViewportOverflows(responsiveLayoutGraph.getNodes());
-        detectOverflowOrOverlap(responsiveLayoutGraph.getAlignmentConstraints());
-        //checkForSmallRanges(responsiveLayoutGraph.getAlignmentConstraints());
-        //checkForWrappingElements();
+        detectElementCollisionAndProtrusionAnomalies(responsiveLayoutGraph.getAlignmentConstraints());
+        detectViewportProtrusionAnomalies(responsiveLayoutGraph.getNodes());
 
         return errors;
     }
 
-    public void checkForViewportOverflows(HashMap<String, Node> nodes) {
-        //TODO
-    }
+    public void detectElementCollisionAndProtrusionAnomalies(HashBasedTable<String, int[], AlignmentConstraint> alignmentConstraints) {
 
-    /**
-     * This method examines the alignment constraints from the RLG under test to see if any overlapping or overflowing elements
-     * have been found
-     *
-     * @param alignmentConstraints the set of constraints to analyse
-     */
-    public void detectOverflowOrOverlap(HashBasedTable<String, int[], AlignmentConstraint> alignmentConstraints) {
+        alignmentConstraints.values().forEach(alignmentConstraint -> {
+            if (alignmentConstraint.getType() == Type.SIBLING) {
+                if (alignmentConstraint.getAttributes()[10]) {
 
-        // Iterate through all constraints
-        for (AlignmentConstraint ac : alignmentConstraints.values()) {
-            // We only need to look at the sibling ones
-            if (ac.getType() == Type.SIBLING) {
+                    boolean collision = checkElementCollision(alignmentConstraint);
 
-                // Only continue analysis if the "overlapping" attribute label is true
-                if (ac.getAttributes()[10]) {
-                    boolean collision = false;
-                    AlignmentConstraint next = getPreviousOrNextConstraint(ac, false, false);
-
-                    // Now, investigate whether the two elements were NOT overlapping at the wider range
-                    if (next != null && next.getType() == Type.SIBLING) {
-                        // Check if elements overlapping in next constraint
-                        if (!next.getAttributes()[10]) {
-                            // If they weren't then report a collision failure
-                            CollisionFailure oe = new CollisionFailure(ac);
-                            errors.add(oe);
-                            collision = true;
-                        }
-                    }
-
-                    // Only continue checking if the current constraint was not identified as a collision failure
                     if (!collision) {
-                        // Get the ancestry of the two nodes, so we can see if the overlap is due to an overflow
-                        HashSet<Node> n1Ancestry = getAncestry(ac.getNode1(), ac.getMax() + 1);
-                        HashSet<Node> n2Ancestry = getAncestry(ac.getNode2(), ac.getMax() + 1);
-
-                        // If node2 in ancestry of node1 or vice verse, it's an overflow
-                        if (n1Ancestry.contains(ac.getNode2())) {
-                            ElementProtrusionFailure ofe = new ElementProtrusionFailure(ac.getNode1(), ac);
-                            errors.add(ofe);
-                        } else if (n2Ancestry.contains(ac.getNode1())) {
-                            ElementProtrusionFailure ofe = new ElementProtrusionFailure(ac.getNode2(), ac);
-                            errors.add(ofe);
-                        }
+                        checkElementProtrusion(alignmentConstraint);
                     }
                 }
             }
+        });
+    }
+
+    private boolean checkElementCollision(AlignmentConstraint alignmentConstraint){
+        boolean collision = false;
+        AlignmentConstraint next = getPreviousOrNextConstraint(alignmentConstraint, false, false);
+        if (next != null && next.getType() == Type.SIBLING) {
+            if (!next.getAttributes()[10]) {
+                errors.add(new CollisionAnomaly(alignmentConstraint));
+                collision = true;
+            }
+        }
+        return collision;
+    }
+
+    private void checkElementProtrusion(AlignmentConstraint alignmentConstraint) {
+        HashSet<Node> n1Ancestry = getAncestry(alignmentConstraint.getNode1(), alignmentConstraint.getMax() + 1);
+        HashSet<Node> n2Ancestry = getAncestry(alignmentConstraint.getNode2(), alignmentConstraint.getMax() + 1);
+
+        if (n1Ancestry.contains(alignmentConstraint.getNode2())) {
+            errors.add(new ElementProtrusionAnomaly(alignmentConstraint.getNode1(), alignmentConstraint));
+        } else if (n2Ancestry.contains(alignmentConstraint.getNode1())) {
+            errors.add(new ElementProtrusionAnomaly(alignmentConstraint.getNode2(), alignmentConstraint));
         }
     }
 
-    public void checkForSmallRanges(HashBasedTable<String, int[], AlignmentConstraint> alignmentConstraints) {
-        //TODO
+    public void detectViewportProtrusionAnomalies(HashMap<String, Node> nodes) {
+
+        nodes.values().forEach(node ->{
+
+            if (!node.getxPath().equals("/HTML/BODY")) {
+
+                ArrayList<AlignmentConstraint> parentConstraints = node.getParentConstraints();
+
+                TreeMap<Integer, Integer> conBounds = new TreeMap<>();
+
+                parentConstraints.forEach(parentConstraint -> {
+                    conBounds.put(parentConstraint.getMin(), parentConstraint.getMax());
+                });
+
+                if (parentConstraints.size() > 0) {
+                    int gmin = vmin;
+
+                    for (Map.Entry e : conBounds.entrySet()) {
+                        int gmax = (int) e.getKey() - 1;
+                        if (gmin < gmax) {
+                            String key = isVisible(node, gmin, gmax);
+                            if (!key.equals("")) {
+                                int repMin = getNumberFromKey(key, 0);
+                                int repMax = getNumberFromKey(key, 1);
+                                errors.add(new ViewportProtrusionAnomaly(node, repMin, repMax));
+                            }
+                        }
+                        gmin = (int) e.getValue() + 1;
+                    }
+                    if (gmin < vmax && !isVisible(node, gmin, vmax).equals("")) {
+                        errors.add(new ViewportProtrusionAnomaly(node, gmin, vmax));
+                    }
+                }
+            }
+        });
     }
 
-    private void checkForWrappingElements() {
-        //TODO
+    /**
+     * This method investigates whether a node, n, is visible at any viewport widths within a range
+     *
+     * @param n    the node being investigated
+     * @param gmin the lower bound of the range
+     * @param gmax the upper bound of the range
+     * @return
+     */
+    private String isVisible(Node n, int gmin, int gmax) {
+        // Get the visibility constraints of n
+        ArrayList<VisibilityConstraint> vcons = n.getVisibilityConstraints();
+
+        // Iterate through each one
+        for (VisibilityConstraint vc : vcons) {
+            int visMin = vc.appear;
+            int visMax = vc.disappear;
+
+            // Check if the constraint intersects the range
+            if (gmax >= visMin && gmax <= visMax) {
+                // If so, return the range of widths within the range at which n is visible
+                if (visMin <= gmin) {
+                    return gmin + ":" + gmax;
+                } else {
+                    return visMin + ":" + gmax;
+                }
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Simple utility to extract a numeric bound from a string key
+     *
+     * @param key The string key to extract from
+     * @param i   The bound we want (either 0 or 1)
+     * @return The extracted bound
+     */
+    private int getNumberFromKey(String key, int i) {
+        String[] splits = key.split(":");
+        return Integer.valueOf(splits[i]);
     }
 
     /**
@@ -123,11 +174,11 @@ public class RLGAnalyser {
      * @return the matched constraint, if one was found
      */
     private AlignmentConstraint getPreviousOrNextConstraint(AlignmentConstraint ac, boolean i, boolean matchType) {
+
         String ac1xp = ac.getNode1().getxPath();
         String ac2xp = ac.getNode2().getxPath();
 
         for (AlignmentConstraint con : responsiveLayoutGraph.getAlignmentConstraints().values()) {
-//
             String con1xp = con.getNode1().getxPath();
             String con2xp = con.getNode2().getxPath();
             if ((ac1xp.equals(con1xp) && ac2xp.equals(con2xp)) || (ac1xp.equals(con2xp) && ac2xp.equals(con1xp))) {
@@ -153,12 +204,11 @@ public class RLGAnalyser {
                     }
                 }
             }
-//            }
         }
         return null;
     }
 
-    public void writeReport(String url, ArrayList<ResponsiveLayoutFailure> errors, String ts) {
+    public void writeReport(String url, ArrayList<ResponsiveLayoutAnomaly> errors, String ts) {
         PrintWriter output = null;
         try {
             File outputFile = null;
@@ -240,6 +290,5 @@ public class RLGAnalyser {
         }
         return ancestors;
     }
-
 
 }

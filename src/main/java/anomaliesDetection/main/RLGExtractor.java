@@ -1,11 +1,11 @@
 package anomaliesDetection.main;
 
 import anomaliesDetection.analyse.RLGAnalyser;
-import anomaliesDetection.anomaliesReporting.ResponsiveLayoutFailure;
+import anomaliesDetection.anomaliesReporting.ResponsiveLayoutAnomaly;
 import anomaliesDetection.layout.LayoutFactory;
-import anomaliesDetection.mutation.CSSMutator;
 import anomaliesDetection.responsiveLayoutGraph.ResponsiveLayoutGraph;
 import anomaliesDetection.utils.StopwatchFactory;
+import anomaliesDetection.utils.Utils;
 import cz.vutbr.web.css.*;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.JavascriptExecutor;
@@ -32,11 +32,8 @@ public class RLGExtractor {
     public ResponsiveLayoutGraph rlg;
     public WebDriver webDriver;
     public String browser;
-    static String scriptToExtract;
-
     private String current;
-    private String fullUrl;
-    private String shortUrl;
+    private String url;
     private HashMap<Integer, DomNode> doms;
     private HashMap<Integer, LayoutFactory> lFactories;
     private String sampleTechnique;
@@ -51,12 +48,10 @@ public class RLGExtractor {
     private String ts;
     final int[] SPOT_CHECK_WIDTHS = new int[]{480, 600, 640, 768, 1024, 1280};
     HashMap<String, int[]> spotCheckWidths;
-    int[] allWidths;
 
-    public RLGExtractor(String current, String fullUrl, String shortUrl, HashMap<Integer, DomNode> doms, String b, String st, boolean bs, int start, int end, int ss, String preamble, int sleep, String timeStamp, boolean baselines)  throws IOException{
+    public RLGExtractor(String current, String url, HashMap<Integer, DomNode> doms, String b, String st, boolean bs, int start, int end, int ss, String preamble, int sleep, String timeStamp, boolean baselines)  throws IOException{
         this.current = current;
-        this.fullUrl = fullUrl;
-        this.shortUrl = shortUrl;
+        this.url = url;
         this.doms = doms;
         this.lFactories = new HashMap<>();
         this.browser = b;
@@ -96,9 +91,9 @@ public class RLGExtractor {
             JavascriptExecutor js = (JavascriptExecutor) webDriver;
             // Load up the webpage in the browser, using a pop-up to make sure we can resize down to 320 pixels wide
             String winHandleBefore = webDriver.getWindowHandle();
-            webDriver.get(fullUrl);
-            ((JavascriptExecutor) webDriver).executeScript("var newwindow=window.open(\"" + fullUrl + "\",'test','width=320,height=1024,top=50,left=50', scrollbars='no', menubar='no', resizable='no', toolbar='no', top='+top+', left='+left+', 'false');\n" +
-                    "newwindow.focus();");
+            webDriver.get(url);
+            ((JavascriptExecutor) webDriver).executeScript("var newwindow=window.open(\"" + url + "\",'test','width=320,height=1024,top=50,left=50'," +
+                    " scrollbars='no', menubar='no', resizable='no', toolbar='no', top='+top+', left='+left+', 'false');\n" + "newwindow.focus();");
             for (String winHandle : webDriver.getWindowHandles()) {
                 webDriver.switchTo().window(winHandle);
                 if (winHandle.equals(winHandleBefore)) {
@@ -107,13 +102,12 @@ public class RLGExtractor {
             }
             webDriver.manage().window().setPosition(new Point(0, 0));
 
-
             // Calculate the initial sample widths
-            sampleWidths = calculateSampleWidths(sampleTechnique, shortUrl, webDriver, startW, endW, stepSize, preamble, breakpoints);
+            sampleWidths = calculateSampleWidths(sampleTechnique, url, webDriver, startW, endW, stepSize, preamble, breakpoints);
             initialDoms = sampleWidths.length;
 
             // Capture the layout of the page at each width
-            AutomaticAnomaliesDetectionController.capturePageModel(fullUrl, sampleWidths, false, webDriver, lFactories, new HashMap<>());
+            AutomaticAnomaliesDetectionController.capturePageModel(url, sampleWidths, false, webDriver, lFactories, new HashMap<>());
             ArrayList<LayoutFactory> oracleLFs = new ArrayList<>();
 
             // For each sampled width, analyse the DOM to construct the specific layout structure
@@ -123,26 +117,26 @@ public class RLGExtractor {
             }
 
             // Use the initial layouts to build the full RLG
-            this.rlg = new ResponsiveLayoutGraph(oracleLFs, sampleWidths, fullUrl, lFactories, binarySearch, webDriver, swf, sleep);
+            this.rlg = new ResponsiveLayoutGraph(oracleLFs, sampleWidths, url, lFactories, binarySearch, webDriver, swf, sleep);
             this.swf.getRlg().stop();
             this.swf.getDetect().start();
 
             // Use the extracted RLG to find any layout inconsistencies the developer/tester should know about
-            RLGAnalyser analyser = new RLGAnalyser(this.getRlg(), webDriver, fullUrl, breakpoints, lFactories, startW, endW);
-            ArrayList<ResponsiveLayoutFailure> errors = analyser.analyse();
+            RLGAnalyser analyser = new RLGAnalyser(this.getRlg(), webDriver, url, breakpoints, lFactories, startW, endW);
+            ArrayList<ResponsiveLayoutAnomaly> errors = analyser.analyse();
             this.swf.getDetect().stop();
 
             this.swf.getReport().start();
 
             //For each detected RLF, capture a screenshot for the report
             if (errors.size() > 0) {
-                for (ResponsiveLayoutFailure error : errors) {
-                    error.captureScreenshotExample(errors.indexOf(error) + 1, shortUrl, webDriver, fullUrl, ts);
+                for (ResponsiveLayoutAnomaly error : errors) {
+                    error.captureScreenshotExample(errors.indexOf(error) + 1, url, webDriver, url, ts);
                 }
             }
 
             // Write the text report to disk
-            analyser.writeReport(shortUrl, errors, ts);
+            analyser.writeReport(url, errors, ts);
 
             // Stop the timer for the report generation
             this.swf.getReport().stop();
@@ -169,18 +163,6 @@ public class RLGExtractor {
         return Utils.getScreenshot(fullUrl, captureWidth, AutomaticAnomaliesDetectionController.sleep, d, errorID);
     }
 
-    public StopwatchFactory getSwf() {
-        return swf;
-    }
-
-    public int getInitialDoms() {
-        return initialDoms;
-    }
-
-    public int[] getSampleWidths() {
-        return sampleWidths;
-    }
-
     /**
      * This method determines the initial viewport widths at which to sample the page's layout
      *
@@ -194,7 +176,7 @@ public class RLGExtractor {
      * @param breakpoints the list of breakpoints
      * @return
      */
-    public static int[] calculateSampleWidths(String technique, String shortUrl, WebDriver drive, int startWidth, int finalWidth, int stepSize, String preamble, ArrayList<Integer> breakpoints) {
+    public static int[] calculateSampleWidths(String technique, String shortUrl, WebDriver drive, int startWidth, int finalWidth, int stepSize, String preamble, ArrayList<Integer> breakpoints) throws IOException {
         int[] widths = null;
         ArrayList<Integer> widthsAL = new ArrayList<>();
         if (technique.equals("uniformBP")) {
@@ -277,7 +259,6 @@ public class RLGExtractor {
             }
         }
 
-
         // Return the array of widths
         if (widths != null) {
             return widths;
@@ -288,16 +269,16 @@ public class RLGExtractor {
 
     private void runBaselines() throws IOException {
         webDriver.manage().window().setSize(new org.openqa.selenium.Dimension(1400, 1000));
-        webDriver.get(fullUrl);
+        webDriver.get(url);
         File spotcheckDir, exhaustiveDir;
-        if (!shortUrl.contains("www")) {
-            String[] splits = shortUrl.split("/");
+        if (!url.contains("www")) {
+            String[] splits = url.split("/");
             String webpage = splits[0];
             String mutant = "index";
             spotcheckDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + webpage + "/spotcheck/");
             exhaustiveDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + webpage + "/exhaustive/");
         } else {
-            String[] splits = shortUrl.split("www.");
+            String[] splits = url.split("www.");
             spotcheckDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + splits[1] + "/spotcheck/");
             exhaustiveDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + splits[1] + "/exhaustive/");
         }
@@ -310,7 +291,7 @@ public class RLGExtractor {
             }
             int[] scws = spotCheckWidths.get(scTechnique);
             for (int scw : scws) {
-                BufferedImage ss = Utils.getScreenshot(shortUrl, scw, sleep*2, webDriver, scw);
+                BufferedImage ss = Utils.getScreenshot(url, scw, sleep*2, webDriver, scw);
                 BufferedImage dest = ss.getSubimage(0, 0, scw, ss.getHeight());
                 Graphics2D g2d = ss.createGraphics();
                 g2d.setColor(Color.RED);
@@ -376,16 +357,17 @@ public class RLGExtractor {
     }
 
     @SuppressWarnings("unchecked")
-    public static ArrayList<String> initialiseFiles(String url, WebDriver driver) {
-//		JavascriptExecutor js = (JavascriptExecutor) driver;
-        String script;
+    public static ArrayList<String> initialiseFiles(String url, WebDriver driver) throws IOException {
+        String current = new java.io.File(".").getCanonicalPath();
+        String script = null;
         try {
-            script = Utils.readFile(new java.io.File(".").getCanonicalPath() + "/../resources/getCssFiles.js");
+            script = Utils.readFile(current + "/resources/getCssFiles.js");
+
             return (ArrayList<String>) ((JavascriptExecutor) driver).executeScript(script);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @SuppressWarnings({"unused", "rawtypes"})
@@ -398,12 +380,14 @@ public class RLGExtractor {
             int counter = 0;
 
             for (String cssFile : cssFiles) {
-                //            System.out.println(cssFile);
                 String contents = "";
                 try {
                     if (cssFile.contains("http")) {
                         cssUrl = new URL(cssFile);
                     } else if (cssFile.substring(0, 2).equals("//") || cssFile.substring(0, 1).equals("/")) {
+                        if(base.endsWith("/")){
+                            base = base.substring(0, base.length() - 1);
+                        }
                         cssUrl = new URL(base + cssFile);
                     } else {
                         cssUrl = new URL(("file://" + preamble + base.replace("/index.html", "") + "/" + cssFile.replace("./", "")));
@@ -419,6 +403,7 @@ public class RLGExtractor {
                     contents += "\n\n";
                     cssContent[counter] = contents;
                 } catch (Exception e) {
+
                     e.printStackTrace();
                     System.out.println("Problem loading or layout the CSS file " + cssUrl.toString());
                 }
@@ -428,16 +413,13 @@ public class RLGExtractor {
             StyleSheet ss = null;
             for (int i = 0; i < cssContent.length; i++) {
                 String s = cssContent[i];
-                //System.out.println(s);
                 try {
                     String prettified = s;
-                    // CSSMutator.prettifyCss(s);
                     StyleSheet temp = CSSFactory.parse(prettified);
-                    //System.out.println(temp);
                     for (RuleBlock rb : temp.asList()) {
                         if (rb instanceof RuleMedia) {
                             RuleMedia rm = (RuleMedia) rb;
-                            if (CSSMutator.hasNumericQuery(rm)) {
+                            if (hasNumericQuery(rm)) {
 
                                 if (rm.asList().size() > 0) {
                                     mqCandidates.add(rm);
@@ -457,6 +439,32 @@ public class RLGExtractor {
         return mqCandidates;
     }
 
+    private static boolean hasNumericQuery(RuleBlock rb) {
+        for (MediaQuery mq : ((RuleMedia) rb).getMediaQueries()) {
+            try {
+                for (MediaExpression me : mq.asList()) {
+                    if (me.toString().contains("width")) {
+                        return true;
+                    }
+                }
 
+            } catch (Exception e) {
+
+            }
+        }
+        return false;
+    }
+
+    public StopwatchFactory getSwf() {
+        return swf;
+    }
+
+    public int getInitialDoms() {
+        return initialDoms;
+    }
+
+    public int[] getSampleWidths() {
+        return sampleWidths;
+    }
 }
 

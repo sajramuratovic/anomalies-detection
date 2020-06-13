@@ -5,7 +5,7 @@ import org.openqa.selenium.WebDriver;
 
 import java.util.HashSet;
 
-public abstract class ResponsiveLayoutFailure {
+public abstract class ResponsiveLayoutAnomaly {
 
     public abstract void captureScreenshotExample(int errorID, String url, WebDriver webDriver, String fullUrl, String timeStamp);
 

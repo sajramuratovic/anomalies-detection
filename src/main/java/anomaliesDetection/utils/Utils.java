@@ -1,4 +1,4 @@
-package anomaliesDetection.main;
+package anomaliesDetection.utils;
 
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;

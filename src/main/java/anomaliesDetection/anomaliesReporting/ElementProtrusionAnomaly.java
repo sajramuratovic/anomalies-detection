@@ -3,9 +3,9 @@ package anomaliesDetection.anomaliesReporting;
 import anomaliesDetection.layout.Element;
 import anomaliesDetection.layout.LayoutFactory;
 import anomaliesDetection.main.RLGExtractor;
-import anomaliesDetection.main.Utils;
 import anomaliesDetection.responsiveLayoutGraph.AlignmentConstraint;
 import anomaliesDetection.responsiveLayoutGraph.Node;
+import anomaliesDetection.utils.Utils;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
 
@@ -18,36 +18,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class ElementProtrusionFailure extends ResponsiveLayoutFailure {
-    AlignmentConstraint ac1, ac2, ofCon, match;
+public class ElementProtrusionAnomaly extends ResponsiveLayoutAnomaly {
+
+    AlignmentConstraint ofCon, match;
     HashMap<Node, ArrayList<AlignmentConstraint>> map;
     Node overflowed;
     Node intendedParent;
-    ArrayList<Node> newParents;
 
-
-    public HashMap<Node, ArrayList<AlignmentConstraint>> getMap() {
-        return map;
-    }
-
-    public ElementProtrusionFailure(HashMap<Node, ArrayList<AlignmentConstraint>> m, Node ip, Node n) {
-        this.map = m;
-        intendedParent = ip;
-        overflowed = n;
-    }
-
-    public ElementProtrusionFailure(Node o, AlignmentConstraint ac) {
-        overflowed = o;
-        ofCon = ac;
-
-    }
-
-    public String toString() {
-        return overflowed.getxPath() + " OVERFLOWED ITS PARENT BETWEEN " + ofCon.getMin() + " AND " + ofCon.getMax() + "\n\t" + ofCon + "\n\t" + match;
+    public ElementProtrusionAnomaly(Node node, AlignmentConstraint alignmentConstraint) {
+        overflowed = node;
+        ofCon = alignmentConstraint;
     }
 
     /**
      * Captures a screenshot of the failure, highlights the overflowing elements and then saves it to disk
+     *
      * @param errorID   The error ID of the failure to uniquely identify it
      * @param url       The URL of the webpage under test
      * @param webDriver The WebDriver object currently rendering the page
@@ -76,16 +61,7 @@ public class ElementProtrusionFailure extends ResponsiveLayoutFailure {
             int[] coords2 = e2.getBoundingCoordinates();
 
             // Set up Graphics@d object so the elements can be highlighted
-            Graphics2D g2d = img.createGraphics();
-
-            // Highlight the two elements in different colours
-            g2d.setStroke(new BasicStroke(3));
-            g2d.setColor(Color.RED);
-            g2d.drawRect(coords1[0], coords1[1], coords1[2] - coords1[0], coords1[3] - coords1[1]);
-            g2d.setColor(Color.CYAN);
-            g2d.drawRect(coords2[0], coords2[1], coords2[2] - coords2[0], coords2[3] - coords2[1]);
-            g2d.dispose();
-
+            setUpGraphicsObject(img.createGraphics(), coords1, coords2);
 
             // Set up the output file
             File output = Utils.getOutputFilePath(url, timeStamp, errorID);
@@ -102,6 +78,18 @@ public class ElementProtrusionFailure extends ResponsiveLayoutFailure {
         }
     }
 
+    private void setUpGraphicsObject(Graphics2D graphics2D, int[] coords1, int[] coords2) {
+
+        Graphics2D g2d = graphics2D;
+        // Highlight the two elements in different colours
+        g2d.setColor(Color.RED);
+        g2d.setStroke(new BasicStroke(3));
+        g2d.drawRect(coords1[0], coords1[1], coords1[2] - coords1[0], coords1[3] - coords1[1]);
+        g2d.setColor(Color.CYAN);
+        g2d.drawRect(coords2[0], coords2[1], coords2[2] - coords2[0], coords2[3] - coords2[1]);
+        g2d.dispose();
+    }
+
     @Override
     public HashSet<Node> getNodes() {
         HashSet<Node> nodes = new HashSet<>();
@@ -112,7 +100,7 @@ public class ElementProtrusionFailure extends ResponsiveLayoutFailure {
 
     @Override
     public int[] getBounds() {
-        return new int[] {ofCon.getMin(), ofCon.getMax()};
+        return new int[]{ofCon.getMin(), ofCon.getMax()};
     }
 
     public Node getOverflowed() {
@@ -129,5 +117,13 @@ public class ElementProtrusionFailure extends ResponsiveLayoutFailure {
 
     public AlignmentConstraint getMatch() {
         return match;
+    }
+
+    public HashMap<Node, ArrayList<AlignmentConstraint>> getMap() {
+        return map;
+    }
+
+    public String toString() {
+        return overflowed.getxPath() + " OVERFLOWED ITS PARENT BETWEEN " + ofCon.getMin() + " AND " + ofCon.getMax() + "\n\t" + ofCon + "\n\t" + match;
     }
 }

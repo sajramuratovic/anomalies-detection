@@ -1,6 +1,6 @@
-package anomaliesDetection.main;
+package anomaliesDetection.utils;
 
-import anomaliesDetection.anomaliesReporting.ResponsiveLayoutFailure;
+import anomaliesDetection.anomaliesReporting.ResponsiveLayoutAnomaly;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
@@ -20,7 +20,7 @@ public class PDFUtils {
     private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
 
 
-    public static void generatePDFReport(File outputFile, ArrayList<ResponsiveLayoutFailure> errors){
+    public static void generatePDFReport(File outputFile, ArrayList<ResponsiveLayoutAnomaly> errors){
         try {
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(outputFile.toString() + "/AnomaliesReport.pdf"));
@@ -58,17 +58,17 @@ public class PDFUtils {
         document.newPage();
     }
 
-    public static void addContent(Document document, ArrayList<ResponsiveLayoutFailure> responsiveLayoutFailures) throws DocumentException {
+    public static void addContent(Document document, ArrayList<ResponsiveLayoutAnomaly> responsiveLayoutAnomalies) throws DocumentException {
         Paragraph anomaliesList = new Paragraph();
         addEmptyLine(anomaliesList, 1);
         anomaliesList.add(new Paragraph("Responsive Layout Failures List", subFont));
         addEmptyLine(anomaliesList, 3);
 
-        if (responsiveLayoutFailures.size() > 0) {
-            for (ResponsiveLayoutFailure responsiveLayoutFailure : responsiveLayoutFailures) {
+        if (responsiveLayoutAnomalies.size() > 0) {
+            for (ResponsiveLayoutAnomaly responsiveLayoutAnomaly : responsiveLayoutAnomalies) {
                 anomaliesList.add(new Paragraph("Failure: ", smallBold));
                 addEmptyLine(anomaliesList, 1);
-                anomaliesList.add(new Paragraph(responsiveLayoutFailure.toString(), normalFont));
+                anomaliesList.add(new Paragraph(responsiveLayoutAnomaly.toString(), normalFont));
                 addEmptyLine(anomaliesList, 2);
             }
         } else {

@@ -2,6 +2,7 @@ package anomaliesDetection.main;
 
 import anomaliesDetection.layout.LayoutFactory;
 import anomaliesDetection.utils.AlertHelper;
+import anomaliesDetection.utils.Utils;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -78,7 +79,7 @@ public class AutomaticAnomaliesDetectionController {
             return;
         }
         if (!verifyUrl(webPageURL.getText())) {
-            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Error!", "Please enter the whole Web Page URL!");
+            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Error!", "Please enter a valid Web Page URL!");
             return;
         }
 
@@ -110,7 +111,7 @@ public class AutomaticAnomaliesDetectionController {
             Date date = new Date();
             Format formatter = new SimpleDateFormat("YYYY-MM-dd_hh-mm-ss");
             String timeStamp = formatter.format(date);
-            RLGExtractor extractor = new RLGExtractor(current, url, url, oracleDoms, browser, sampleTechnique,
+            RLGExtractor extractor = new RLGExtractor(current, url, oracleDoms, browser, sampleTechnique,
                     binarySearch, startWidth, finalWidth, stepSize, null, sleep, timeStamp, baselines);
             extractor.extract();
         } catch (IOException e) {
