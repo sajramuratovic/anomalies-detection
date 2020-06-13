@@ -48,13 +48,15 @@ public class RLGAnalyser {
     }
 
     public void detectElementCollisionAndProtrusionAnomalies(HashBasedTable<String, int[], AlignmentConstraint> alignmentConstraints) {
-
+        // iterating through all alignment constraints in the RLG until it finds one for a pair of elements in a sibling relationship
         alignmentConstraints.values().forEach(alignmentConstraint -> {
             if (alignmentConstraint.getType() == Type.SIBLING) {
+                // inspects its attribute set for the overlapping attribute
                 if (alignmentConstraint.getAttributes()[10]) {
 
                     boolean collision = checkElementCollision(alignmentConstraint);
 
+                    // continue checking if the current constraint was not identified as a collision anomaly
                     if (!collision) {
                         checkElementProtrusion(alignmentConstraint);
                     }
@@ -66,8 +68,11 @@ public class RLGAnalyser {
     private boolean checkElementCollision(AlignmentConstraint alignmentConstraint){
         boolean collision = false;
         AlignmentConstraint next = getPreviousOrNextConstraint(alignmentConstraint, false, false);
+        // investigate whether the two elements were not overlapping at the wider range
         if (next != null && next.getType() == Type.SIBLING) {
+            // If the attribute is not present, it signifies the elements are no longer overlapping
             if (!next.getAttributes()[10]) {
+                // report an element collision anomaly
                 errors.add(new CollisionAnomaly(alignmentConstraint));
                 collision = true;
             }
@@ -76,9 +81,10 @@ public class RLGAnalyser {
     }
 
     private void checkElementProtrusion(AlignmentConstraint alignmentConstraint) {
+        // get the ancestry of the two nodes
         HashSet<Node> n1Ancestry = getAncestry(alignmentConstraint.getNode1(), alignmentConstraint.getMax() + 1);
         HashSet<Node> n2Ancestry = getAncestry(alignmentConstraint.getNode2(), alignmentConstraint.getMax() + 1);
-
+        //check the ancestry sets. If node1 is an ancestor of node2, or vice versa, it reports an element protrusion anomaly
         if (n1Ancestry.contains(alignmentConstraint.getNode2())) {
             errors.add(new ElementProtrusionAnomaly(alignmentConstraint.getNode1(), alignmentConstraint));
         } else if (n2Ancestry.contains(alignmentConstraint.getNode1())) {
