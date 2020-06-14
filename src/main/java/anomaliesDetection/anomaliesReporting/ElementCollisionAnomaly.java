@@ -17,12 +17,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class CollisionAnomaly extends ResponsiveLayoutAnomaly {
+public class ElementCollisionAnomaly extends ResponsiveLayoutAnomaly {
 
     // Instance variable representing the colliding constraint
     private AlignmentConstraint constraint;
 
-    public CollisionAnomaly(AlignmentConstraint alignmentConstraint) {
+    public ElementCollisionAnomaly(AlignmentConstraint alignmentConstraint) {
         constraint = alignmentConstraint;
     }
 

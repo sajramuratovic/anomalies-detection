@@ -61,12 +61,12 @@ public class PDFUtils {
     public static void addContent(Document document, ArrayList<ResponsiveLayoutAnomaly> responsiveLayoutAnomalies) throws DocumentException {
         Paragraph anomaliesList = new Paragraph();
         addEmptyLine(anomaliesList, 1);
-        anomaliesList.add(new Paragraph("Responsive Layout Failures List", subFont));
+        anomaliesList.add(new Paragraph("Responsive Layout Anomalies List", subFont));
         addEmptyLine(anomaliesList, 3);
 
         if (responsiveLayoutAnomalies.size() > 0) {
             for (ResponsiveLayoutAnomaly responsiveLayoutAnomaly : responsiveLayoutAnomalies) {
-                anomaliesList.add(new Paragraph("Failure: ", smallBold));
+                anomaliesList.add(new Paragraph("Anomaly: ", smallBold));
                 addEmptyLine(anomaliesList, 1);
                 anomaliesList.add(new Paragraph(responsiveLayoutAnomaly.toString(), normalFont));
                 addEmptyLine(anomaliesList, 2);

@@ -1,6 +1,6 @@
 package anomaliesDetection.analyse;
 
-import anomaliesDetection.anomaliesReporting.CollisionAnomaly;
+import anomaliesDetection.anomaliesReporting.ElementCollisionAnomaly;
 import anomaliesDetection.anomaliesReporting.ElementProtrusionAnomaly;
 import anomaliesDetection.anomaliesReporting.ResponsiveLayoutAnomaly;
 import anomaliesDetection.anomaliesReporting.ViewportProtrusionAnomaly;
@@ -74,7 +74,7 @@ public class RLGAnalyser {
             // If the attribute is not present, it signifies the elements are no longer overlapping
             if (!next.getAttributes()[10]) {
                 // report an element collision anomaly
-                errors.add(new CollisionAnomaly(alignmentConstraint));
+                errors.add(new ElementCollisionAnomaly(alignmentConstraint));
                 collision = true;
             }
         }
@@ -239,7 +239,7 @@ public class RLGAnalyser {
                 String webpage = splits[0];
                 String mutant = "index-" + ts;
                 try {
-                    outputFile = new File(new File(".").getCanonicalPath() + "/../reports/" + webpage + "/" + mutant + "/");
+                    outputFile = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -248,7 +248,7 @@ public class RLGAnalyser {
                 String webpage = splits[1];
                 String mutant = ts;
                 try {
-                    outputFile = new File(new java.io.File(".").getCanonicalPath() + "/../reports/" + webpage + "/" + mutant + "/");
+                    outputFile = new File(new java.io.File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -257,7 +257,7 @@ public class RLGAnalyser {
                 String webpage = splits[1];
                 String mutant = ts;
                 try {
-                    outputFile = new File(new File(".").getCanonicalPath() + "/../reports/" + webpage + "/" + mutant + "/");
+                    outputFile = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
