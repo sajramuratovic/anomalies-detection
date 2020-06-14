@@ -25,17 +25,17 @@ public class RLGAnalyser {
     ArrayList<Integer> bpoints;
     ArrayList<Node> onePixelOverflows;
     HashMap<Integer, LayoutFactory> layouts;
-    int vmin, vmax;
+    int wmin, wmax;
 
-    public RLGAnalyser(ResponsiveLayoutGraph r, WebDriver webDriver, String fullUrl, ArrayList<Integer> breakpoints, HashMap<Integer, LayoutFactory> lFactories, int vmin, int vmax) {
+    public RLGAnalyser(ResponsiveLayoutGraph r, WebDriver webDriver, String fullUrl, ArrayList<Integer> breakpoints, HashMap<Integer, LayoutFactory> lFactories, int wmin, int wmax) {
         responsiveLayoutGraph = r;
         driver = webDriver;
         url = fullUrl;
         bpoints = breakpoints;
         onePixelOverflows = new ArrayList<>();
         layouts = lFactories;
-        this.vmin = vmin;
-        this.vmax = vmax;
+        this.wmin = wmin;
+        this.wmax = wmax;
         errors = new ArrayList<>();
     }
 
@@ -67,6 +67,7 @@ public class RLGAnalyser {
 
     private boolean checkElementCollision(AlignmentConstraint alignmentConstraint){
         boolean collision = false;
+        // This method searches for the constraint either immediately before or after a given constraint
         AlignmentConstraint next = getPreviousOrNextConstraint(alignmentConstraint, false, false);
         // investigate whether the two elements were not overlapping at the wider range
         if (next != null && next.getType() == Type.SIBLING) {
@@ -82,69 +83,84 @@ public class RLGAnalyser {
 
     private void checkElementProtrusion(AlignmentConstraint alignmentConstraint) {
         // get the ancestry of the two nodes
-        HashSet<Node> n1Ancestry = getAncestry(alignmentConstraint.getNode1(), alignmentConstraint.getMax() + 1);
-        HashSet<Node> n2Ancestry = getAncestry(alignmentConstraint.getNode2(), alignmentConstraint.getMax() + 1);
+        HashSet<Node> node1Ancestry = getAncestry(alignmentConstraint.getNode1(), alignmentConstraint.getMax() + 1);
+        HashSet<Node> node2Ancestry = getAncestry(alignmentConstraint.getNode2(), alignmentConstraint.getMax() + 1);
         //check the ancestry sets. If node1 is an ancestor of node2, or vice versa, it reports an element protrusion anomaly
-        if (n1Ancestry.contains(alignmentConstraint.getNode2())) {
+        if (node1Ancestry.contains(alignmentConstraint.getNode2())) {
             errors.add(new ElementProtrusionAnomaly(alignmentConstraint.getNode1(), alignmentConstraint));
-        } else if (n2Ancestry.contains(alignmentConstraint.getNode1())) {
+        } else if (node2Ancestry.contains(alignmentConstraint.getNode1())) {
             errors.add(new ElementProtrusionAnomaly(alignmentConstraint.getNode2(), alignmentConstraint));
         }
     }
 
     public void detectViewportProtrusionAnomalies(HashMap<String, Node> nodes) {
 
+        //iterating through every element in the RLG, except the body element, as it's the root and therefore has no parent
         nodes.values().forEach(node ->{
-
             if (!node.getxPath().equals("/HTML/BODY")) {
 
+                //For each node-element e it finds all the parent-child alignment constraints for which e is the child, and adds them into a parentConstraints ArrayList
                 ArrayList<AlignmentConstraint> parentConstraints = node.getParentConstraints();
 
-                TreeMap<Integer, Integer> conBounds = new TreeMap<>();
-
+                //Sorting parentConstraints in ascending order based on their lower bound values
+                TreeMap<Integer, Integer> lowerBounds = new TreeMap<>();
                 parentConstraints.forEach(parentConstraint -> {
-                    conBounds.put(parentConstraint.getMin(), parentConstraint.getMax());
+                    lowerBounds.put(parentConstraint.getMin(), parentConstraint.getMax());
                 });
 
-                if (parentConstraints.size() > 0) {
-                    int gmin = vmin;
-
-                    for (Map.Entry e : conBounds.entrySet()) {
-                        int gmax = (int) e.getKey() - 1;
-                        if (gmin < gmax) {
-                            String key = isVisible(node, gmin, gmax);
-                            if (!key.equals("")) {
-                                int repMin = getNumberFromKey(key, 0);
-                                int repMax = getNumberFromKey(key, 1);
-                                errors.add(new ViewportProtrusionAnomaly(node, repMin, repMax));
-                            }
-                        }
-                        gmin = (int) e.getValue() + 1;
-                    }
-                    if (gmin < vmax && !isVisible(node, gmin, vmax).equals("")) {
-                        errors.add(new ViewportProtrusionAnomaly(node, gmin, vmax));
-                    }
-                }
+                findGaps(parentConstraints, lowerBounds, node);
             }
         });
     }
 
     /**
+     * This method attempts to find "gaps" between the bounds of the sorted alignment constraints
+     *
+     * @param parentConstraints
+     * @param lowerBounds
+     * @param node
+     */
+    private void findGaps(ArrayList<AlignmentConstraint> parentConstraints, TreeMap<Integer, Integer> lowerBounds, Node node){
+        if (parentConstraints.size() > 0) {
+            // Initialise the min value of the gap
+            int gmin = wmin;
+            for (Map.Entry e : lowerBounds.entrySet()) {
+                // Update the max bound of the gap
+                int gmax = (int) e.getKey() - 1;
+                if (gmin < gmax) {
+                    // Check is node-element visible in the gap
+                    String visible = isVisible(node, gmin, gmax);
+                    if (!visible.equals("")) {
+                        //Node is visible in the gap, crate Viewport Protrusion Anomaly
+                        int repMin = getNumberFromVisibleString(visible, 0);
+                        int repMax = getNumberFromVisibleString(visible, 1);
+                        errors.add(new ViewportProtrusionAnomaly(node, repMin, repMax));
+                    }
+                }
+                gmin = (int) e.getValue() + 1;
+            }
+            if (gmin < wmax && !isVisible(node, gmin, wmax).equals("")) {
+                errors.add(new ViewportProtrusionAnomaly(node, gmin, wmax));
+            }
+        }
+    }
+
+    /**
      * This method investigates whether a node, n, is visible at any viewport widths within a range
      *
-     * @param n    the node being investigated
+     * @param node    the node being investigated
      * @param gmin the lower bound of the range
      * @param gmax the upper bound of the range
      * @return
      */
-    private String isVisible(Node n, int gmin, int gmax) {
-        // Get the visibility constraints of n
-        ArrayList<VisibilityConstraint> vcons = n.getVisibilityConstraints();
+    private String isVisible(Node node, int gmin, int gmax) {
+        // Get the visibility constraints of node
+        ArrayList<VisibilityConstraint> visibilityConstraints = node.getVisibilityConstraints();
 
         // Iterate through each one
-        for (VisibilityConstraint vc : vcons) {
-            int visMin = vc.appear;
-            int visMax = vc.disappear;
+        for (VisibilityConstraint visibilityConstraint : visibilityConstraints) {
+            int visMin = visibilityConstraint.appear;
+            int visMax = visibilityConstraint.disappear;
 
             // Check if the constraint intersects the range
             if (gmax >= visMin && gmax <= visMax) {
@@ -162,48 +178,48 @@ public class RLGAnalyser {
     /**
      * Simple utility to extract a numeric bound from a string key
      *
-     * @param key The string key to extract from
+     * @param visible The string key to extract from
      * @param i   The bound we want (either 0 or 1)
      * @return The extracted bound
      */
-    private int getNumberFromKey(String key, int i) {
-        String[] splits = key.split(":");
+    private int getNumberFromVisibleString(String visible, int i) {
+        String[] splits = visible.split(":");
         return Integer.valueOf(splits[i]);
     }
 
     /**
      * This method searches for the constraint either immediately before or after a given constraint
      *
-     * @param ac        the constraint we're investigating
+     * @param alignmentConstraint        the constraint we're investigating
      * @param i         whether we want the preceding (true) or following (false) constraint
      * @param matchType whether we care about matching the type as well as the nodes
      * @return the matched constraint, if one was found
      */
-    private AlignmentConstraint getPreviousOrNextConstraint(AlignmentConstraint ac, boolean i, boolean matchType) {
+    private AlignmentConstraint getPreviousOrNextConstraint(AlignmentConstraint alignmentConstraint, boolean i, boolean matchType) {
 
-        String ac1xp = ac.getNode1().getxPath();
-        String ac2xp = ac.getNode2().getxPath();
+        String ac1xp = alignmentConstraint.getNode1().getxPath();
+        String ac2xp = alignmentConstraint.getNode2().getxPath();
 
         for (AlignmentConstraint con : responsiveLayoutGraph.getAlignmentConstraints().values()) {
             String con1xp = con.getNode1().getxPath();
             String con2xp = con.getNode2().getxPath();
             if ((ac1xp.equals(con1xp) && ac2xp.equals(con2xp)) || (ac1xp.equals(con2xp) && ac2xp.equals(con1xp))) {
                 if (i) {
-                    if (con.getMax() == ac.getMin() - 1) {
+                    if (con.getMax() == alignmentConstraint.getMin() - 1) {
                         if (!matchType) {
                             return con;
                         } else {
-                            if (con.getType() == ac.getType()) {
+                            if (con.getType() == alignmentConstraint.getType()) {
                                 return con;
                             }
                         }
                     }
                 } else {
-                    if (con.getMin() == ac.getMax() + 1) {
+                    if (con.getMin() == alignmentConstraint.getMax() + 1) {
                         if (!matchType) {
                             return con;
                         } else {
-                            if (con.getType() == ac.getType()) {
+                            if (con.getType() == alignmentConstraint.getType()) {
                                 return con;
                             }
                         }
