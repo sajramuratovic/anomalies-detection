@@ -36,7 +36,6 @@ public class ElementProtrusionAnomaly extends ResponsiveLayoutAnomaly {
      * @param errorID   The error ID of the failure to uniquely identify it
      * @param url       The URL of the webpage under test
      * @param webDriver The WebDriver object currently rendering the page
-     * @param fullUrl   The full file path used to save the image in the correct place
      * @param timeStamp The time stamp of the tool execution to uniquely identify different full test reports
      */
     @Override
