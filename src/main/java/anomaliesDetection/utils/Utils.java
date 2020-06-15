@@ -60,7 +60,8 @@ public class Utils {
             String webpage = splits[0];
             String mutant = "index-" + timeStamp;
             try {
-                output = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaly" + errorID + "/");
+                //output = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaly" + errorID + "/");
+                output = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaliesScreenshots/");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -69,7 +70,8 @@ public class Utils {
             String webpage = splits[1];
             String mutant = timeStamp;
             try {
-                output = new File(new java.io.File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaly" + errorID + "/");
+                //output = new File(new java.io.File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaly" + errorID + "/");
+                output = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaliesScreenshots/");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -78,7 +80,8 @@ public class Utils {
             String webpage = splits[1];
             String mutant = timeStamp;
             try {
-                output = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaly" + errorID + "/");
+                //output = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaly" + errorID + "/");
+                output = new File(new File(".").getCanonicalPath() + "/./reports/" + webpage + "/" + mutant + "/anomaliesScreenshots/");
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -65,8 +65,9 @@ public class PDFUtils {
         addEmptyLine(anomaliesList, 3);
 
         if (responsiveLayoutAnomalies.size() > 0) {
+            int i = 1;
             for (ResponsiveLayoutAnomaly responsiveLayoutAnomaly : responsiveLayoutAnomalies) {
-                anomaliesList.add(new Paragraph("Anomaly: ", smallBold));
+                anomaliesList.add(new Paragraph("Anomaly "+ (i++) +": ", smallBold));
                 addEmptyLine(anomaliesList, 1);
                 anomaliesList.add(new Paragraph(responsiveLayoutAnomaly.toString(), normalFont));
                 addEmptyLine(anomaliesList, 2);

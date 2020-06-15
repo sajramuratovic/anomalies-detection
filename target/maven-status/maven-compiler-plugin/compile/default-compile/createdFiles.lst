@@ -3,6 +3,7 @@ xPert\layout\AGDiff.class
 anomaliesDetection\responsiveLayoutGraph\ResponsiveLayoutGraph.class
 anomaliesDetection\layout\Layout$1.class
 anomaliesDetection\layout\Sibling.class
+anomaliesDetection\anomaliesReporting\ElementCollisionAnomaly.class
 anomaliesDetection\layout\Relationship.class
 anomaliesDetection\utils\AlertHelper.class
 xPert\visitors\LevelAssignVisitor.class
@@ -12,7 +13,6 @@ xPert\layout\AGNodeComparator.class
 anomaliesDetection\anomaliesReporting\ResponsiveLayoutAnomaly.class
 anomaliesDetection\anomaliesReporting\ViewportProtrusionAnomaly.class
 xPert\visitors\ApproxMatchVisitor.class
-anomaliesDetection\anomaliesReporting\CollisionAnomaly.class
 xPert\Matcher.class
 xPert\DomUtils.class
 anomaliesDetection\layout\Element.class

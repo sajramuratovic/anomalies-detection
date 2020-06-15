@@ -1,5 +1,6 @@
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\main\RLGExtractor.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\xPert\DomNode.java
+C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\anomaliesReporting\ElementCollisionAnomaly.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\layout\ParentChild.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\main\AutomaticAnomaliesDetectionController.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\anomaliesReporting\ElementProtrusionAnomaly.java
@@ -36,7 +37,6 @@ C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\x
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\anomaliesReporting\ViewportProtrusionAnomaly.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\main\AutomaticAnomaliesDetectionTool.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\xPert\JsonDomParser.java
-C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\anomaliesReporting\CollisionAnomaly.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\utils\StopwatchFactory.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\xPert\layout\Sibling.java
 C:\Users\sajram\Desktop\AnomalijeMagistarski\anomalies-detection\src\main\java\anomaliesDetection\anomaliesReporting\ResponsiveLayoutAnomaly.java
