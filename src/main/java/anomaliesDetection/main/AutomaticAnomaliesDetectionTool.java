@@ -26,7 +26,7 @@ public class AutomaticAnomaliesDetectionTool extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.initStyle(StageStyle.UNDECORATED);
 
-        //we gonna drag the frame
+        // Drag the frame
         root.setOnMousePressed(event -> {
             x = event.getSceneX();
             y = event.getSceneY();

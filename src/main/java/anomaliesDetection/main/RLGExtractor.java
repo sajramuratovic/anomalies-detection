@@ -74,7 +74,6 @@ public class RLGExtractor {
             spotCheckWidths.put("responsinator", new int[] {320, 375, 384, 414, 768, 1024});
             spotCheckWidths.put("semalt", new int[] {320, 384, 600, 768, 1024});
             spotCheckWidths.put("wasserman", new int[] {320, 375, 414, 600, 768, 1280});
-            runBaselines();
         }
     }
 
@@ -264,41 +263,6 @@ public class RLGExtractor {
             return widths;
         } else {
             return new int[]{};
-        }
-    }
-
-    private void runBaselines() throws IOException {
-        webDriver.manage().window().setSize(new org.openqa.selenium.Dimension(1400, 1000));
-        webDriver.get(url);
-        File spotcheckDir, exhaustiveDir;
-        if (!url.contains("www")) {
-            String[] splits = url.split("/");
-            String webpage = splits[0];
-            String mutant = "index";
-            spotcheckDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + webpage + "/spotcheck/");
-            exhaustiveDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + webpage + "/exhaustive/");
-        } else {
-            String[] splits = url.split("www.");
-            spotcheckDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + splits[1] + "/spotcheck/");
-            exhaustiveDir = new File(AutomaticAnomaliesDetectionController.anomalies + "/screenshots/" + splits[1] + "/exhaustive/");
-        }
-        for (String scTechnique : spotCheckWidths.keySet()) {
-            File scTechFile = new File(spotcheckDir + "/" + scTechnique + "/");
-            try {
-                FileUtils.forceMkdir(scTechFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            int[] scws = spotCheckWidths.get(scTechnique);
-            for (int scw : scws) {
-                BufferedImage ss = Utils.getScreenshot(url, scw, sleep*2, webDriver, scw);
-                BufferedImage dest = ss.getSubimage(0, 0, scw, ss.getHeight());
-                Graphics2D g2d = ss.createGraphics();
-                g2d.setColor(Color.RED);
-                g2d.drawRect(0,0, scw, ss.getHeight());
-                File outputfile = new File(scTechFile + "/" + scw + ".png");
-                ImageIO.write(dest, "png", outputfile);
-            }
         }
     }
 

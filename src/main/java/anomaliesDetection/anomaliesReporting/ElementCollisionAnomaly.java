@@ -47,7 +47,7 @@ public class ElementCollisionAnomaly extends ResponsiveLayoutAnomaly {
 
             FileUtils.forceMkdir(output);
 
-            ImageIO.write(img, "png", new File(output +  "/anomaly-" + errorID + "overlapWidth" + captureWidth + ".png"));
+            ImageIO.write(img, "png", new File(output +  "/anomaly-" + errorID + "-overlapWidth" + captureWidth + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException npe) {

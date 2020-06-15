@@ -57,7 +57,7 @@ public class ViewportProtrusionAnomaly extends ResponsiveLayoutAnomaly {
             File output = Utils.getOutputFilePath(url, timeStamp, errorID);
             FileUtils.forceMkdir(output);
             //ImageIO.write(img, "png", new File(output + "/viewportOverflowWidth" + captureWidth + ".png"));
-            ImageIO.write(img, "png", new File(output + "/anomaly-" + errorID+"viewportOverflowWidth" + captureWidth + ".png"));
+            ImageIO.write(img, "png", new File(output + "/anomaly-" + errorID+"-viewportOverflowWidth" + captureWidth + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException npe) {

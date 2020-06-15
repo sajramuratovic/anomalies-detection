@@ -70,7 +70,7 @@ public class ElementProtrusionAnomaly extends ResponsiveLayoutAnomaly {
 
             // Write the highlighted screenshot to file
             //ImageIO.write(img, "png", new File(output + "/overflow-Width" + captureWidth + ".png"));
-            ImageIO.write(img, "png", new File(output +  "/anomaly-" + errorID + "overflow-Width" + captureWidth + ".png"));
+            ImageIO.write(img, "png", new File(output +  "/anomaly-" + errorID + "-overflow-Width" + captureWidth + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException npe) {
